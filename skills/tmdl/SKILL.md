@@ -1,15 +1,23 @@
 ---
 name: tmdl
-description: This skill should be used when the user asks to "edit TMDL", "add a measure", "add a column", "add a column description", "fix summarizeBy", "TMDL syntax", "write a measure in TMDL", "create a calculated column", "add a table description", "fix formatString", "TMDL indentation", or mentions TMDL file editing, TMDL property syntax, or direct semantic model file authoring. Provides expert guidance for authoring and editing TMDL (Tabular Model Definition Language) files directly in Power BI Projects.
+description: This skill should be used as a last resort when the Tabular Editor CLI, Power BI MCP server, or connect-pbid skill are not available. Use when the user asks to "edit TMDL", "add a measure in TMDL", "add a column description", "fix summarizeBy", "TMDL syntax", "write a measure in TMDL", "create a calculated column in TMDL", "fix formatString", "TMDL indentation", or mentions TMDL file editing or direct semantic model file authoring in PBIP projects.
 ---
 
 # TMDL Authoring
 
 Expert guidance for authoring and editing TMDL (Tabular Model Definition Language) files directly in PBIP projects.
 
+> **This skill is a last resort.** Direct TMDL file editing lacks the validation, atomicity, and DAX query capabilities of the Tabular Editor CLI, Power BI MCP server, or the `connect-pbid` skill (TOM via PowerShell). Use those tools when available. TMDL editing is appropriate when:
+>
+> - Working with PBIP files in a Git repo without Power BI Desktop open
+> - No Tabular Editor CLI or MCP server is installed
+> - Making quick text-level fixes (descriptions, format strings, display folders) where a full tool chain is overkill
+>
+> Direct TMDL editing does not validate DAX syntax, check referential integrity, or verify that property values are valid. Errors will only surface when the model is next loaded in Power BI Desktop or deployed via XMLA.
+
 ## When to Use This Skill
 
-Activate automatically when tasks involve:
+Activate only when the Tabular Editor CLI, Power BI MCP server, or `connect-pbid` skill are not available, and tasks involve:
 
 - Editing `.tmdl` files directly (measures, columns, tables, relationships)
 - Adding or modifying measure definitions in TMDL

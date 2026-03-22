@@ -33,6 +33,15 @@ Activate automatically when tasks involve:
 - The local Analysis Services instance only accepts connections from `localhost`
 - Multiple PBI Desktop files open means multiple `msmdsrv.exe` processes on different ports
 - Always use a timeout of 60000ms or higher for PowerShell commands via Bash
+- **Shell escaping**: When calling PowerShell from Bash (e.g., on macOS or WSL), use **single quotes** for the outer `-Command` argument so Bash does not interpret `$env:TEMP`, `$server`, etc. as shell variables. Double quotes cause `$` variables to be eaten by Bash before PowerShell sees them:
+  ```bash
+  # Wrong -- Bash eats $env:TEMP, PowerShell gets empty string
+  powershell -Command "$pkgDir = $env:TEMP\tom_nuget"
+
+  # Correct -- single quotes pass $env:TEMP literally to PowerShell
+  powershell -Command '$pkgDir = "$env:TEMP\tom_nuget"'
+  ```
+  For complex scripts, write to a `.ps1` file and execute with `-File` instead of `-Command` to avoid escaping issues entirely.
 - Do not modify model metadata without explicit user direction
 - Always call `$model.SaveChanges()` to persist modifications; without it, changes are discarded
 - For macOS users running PBI Desktop in Parallels, see [parallels-macos.md](./references/parallels-macos.md)

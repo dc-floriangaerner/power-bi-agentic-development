@@ -207,13 +207,15 @@ $conn.Open()
 All queries should preferably use `SUMMARIZECOLUMNS`.
 Check `dax.guide` online for information about DAX functions, if necessary.
 
-**Important:** ADOMD.NET returns fully-qualified column names from DAX queries (e.g., `'Monsters'[Name]` not `Name`). Always use **column indices** (`$reader[0]`, `$reader[1]`) to read values, not column name strings. Accessing `$reader["Name"]` will fail silently and return blank.
+**Important:** ADOMD.NET returns fully-qualified column names (e.g., `'Monsters'[Name]` not `Name`). Do not access columns by short name (`$reader["Name"]`) -- it fails silently and returns blank. Use `$reader.GetName($i)` to discover column names, then access by index:
 
 ```powershell
 $cmd = $conn.CreateCommand()
 $cmd.CommandText = "EVALUATE SUMMARIZECOLUMNS('Table'[Column], ""@MeasureName"", [Measure])"
 
 $reader = $cmd.ExecuteReader()
+
+# Always iterate by index and use GetName() to map columns
 while ($reader.Read()) {
     for ($i = 0; $i -lt $reader.FieldCount; $i++) {
         Write-Output "$($reader.GetName($i)): $($reader.GetValue($i))"

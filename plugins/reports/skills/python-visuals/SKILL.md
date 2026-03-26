@@ -11,7 +11,7 @@ description: "This skill should be used when the user asks to 'create a Python v
 >
 > If neither the `pbir-cli` skill nor the `pbir-format` skill is loaded, ask the user to install the appropriate plugin before proceeding with report modifications.
 
-Python visuals execute matplotlib/seaborn scripts to render static PNG images on the Power BI canvas.
+Python visuals execute matplotlib/seaborn scripts to render static PNG images on the Power BI canvas. **Prefer seaborn** over raw matplotlib for cleaner syntax and better defaults -- it handles most chart types with less code.
 
 ## Visual Identity
 
@@ -25,7 +25,7 @@ Python visuals execute matplotlib/seaborn scripts to render static PNG images on
 
 ### Step 1: Add the Visual
 
-Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: pythonVisual`, field bindings for `Values:Date.Date` and `Values:Orders.Sales`, positioned at x=40, y=260 with width=800 and height=400.
+Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: pythonVisual`, field bindings for the columns and measures you need (use `Values:Table.Column` or `Values:Table.Measure` format), and position/size as required.
 
 ### Step 2: Write the Script
 
@@ -46,9 +46,22 @@ Critical rules:
 - Column names match the `nativeQueryRef` (display name) from field bindings
 - Only the last `plt.show()` call renders; multiple figures not supported
 
+### Step 2b: Review
+
+Before presenting the script to the user, dispatch the `python-reviewer` agent to validate correctness and provide design feedback.
+
 ### Step 3: Inject the Script
 
-Set the script content in the visual's `objects.script[0].properties.source` literal value (see PBIR Format section below). The script text must be escaped as a single-quoted DAX literal string with `\\n` for newlines.
+Set the script content in the visual's `objects.script[0].properties.source` literal value (see PBIR Format section below).
+
+**Escaping rules for visual.json injection:**
+
+The script must be encoded as a single-quoted DAX literal string inside `expr.Literal.Value`:
+
+- Newlines in the script become `\n` in the JSON string
+- Double quotes inside the script (e.g., `"#5B8DBE"`) become `\"` in the JSON string
+- The entire script is wrapped in single quotes: `'import matplotlib...\nplt.show()'`
+- See `examples/visual/` for a complete real-world visual.json showing this encoding
 
 ### Step 4: Validate
 
@@ -83,6 +96,8 @@ The CLI handles all escaping automatically.
 | pillow | 10.4.0 | Image processing |
 
 **Not supported:** plotly, bokeh, altair (networking blocked in Service).
+
+Full package list: https://learn.microsoft.com/power-bi/connect-data/service-python-packages-support
 
 ### Desktop
 
@@ -146,10 +161,24 @@ else:
     plt.show()
 ```
 
+## When to Use Python Visuals
+
+Python visuals are appropriate for **statistical and analytical visualizations** where the focus is on data analysis rather than interactivity. Use Python visuals when you need:
+
+- Statistical charts (distributions, regressions, correlations, violin plots)
+- Analytical visualizations leveraging scipy, scikit-learn, or statsmodels
+- Chart types that seaborn/matplotlib handle well but Power BI natives don't support
+
+**Output is static PNG** -- no cross-filtering FROM the visual, no hover/tooltip interactivity. Use Deneb instead for interactive custom visuals. Use SVG measures for simple inline graphics in tables/cards.
+
 ## References
 
+- **`references/community-examples.md`** -- seaborn gallery examples organized by chart type, plus matplotlib and Python Graph Gallery links
 - **`references/chart-patterns.md`** -- Common matplotlib/seaborn chart patterns (bar, heatmap, donut, KPI, area)
-- **`examples/`** -- Ready-to-use Python scripts
+- **`examples/script/`** -- Standalone Python scripts (bar-chart, trend-line) -- ready to inject into visual.json after escaping
+- **`examples/visual/bar-chart.json`** -- PBIR visual.json: horizontal stacked bar with PY comparison lines and % change labels
+- **`examples/visual/kpi-card.json`** -- PBIR visual.json: text-based KPI with value, % change indicator, and PY comparison
+- **`examples/visual/trend-line.json`** -- PBIR visual.json: area chart with line plot and monthly x-axis
 
 ## Related Skills
 

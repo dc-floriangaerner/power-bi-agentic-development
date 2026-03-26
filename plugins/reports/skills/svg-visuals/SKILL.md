@@ -62,6 +62,10 @@ report.add_extension_measure(
 report.save()
 ```
 
+### Step 1b: Review
+
+Before presenting the measure to the user, dispatch the `svg-reviewer` agent to validate syntax and provide design feedback.
+
 ### Step 2: Bind to a Visual
 
 Extension measures use `"Schema": "extension"` in the SourceRef:
@@ -165,7 +169,22 @@ VAR Lines = CONCATENATEX(
 - **Performance** -- complex SVG with many elements impacts rendering
 - **Classic card** does NOT support SVG -- use `cardVisual` instead
 
+## When to Use SVG Measures
+
+SVG measures are the preferred choice for **simple inline graphics** embedded in tables, matrices, cards, and image visuals. Use SVG when you need:
+
+- Sparklines, data bars, progress bars, or status indicators inside table/matrix cells
+- KPI micro-charts in card visuals
+- Lightweight visuals that don't require interactivity or complex data transforms
+- No additional custom visual registration (works with native visuals)
+
+**Use Deneb instead** for complex, interactive visualizations (cross-filtering, tooltips, hover states) or chart types that require extensive data transforms. **Use Python/R instead** for statistical analysis charts (distributions, regressions, correlations).
+
 ## References
+
+### Community Examples and Libraries
+
+- **`references/community-examples.md`** -- Community SVG templates organized by target visual type (Table/Matrix, Image, Card), including DaxLib.SVG functions, Kerry Kolosko templates, and PowerBI MacGuyver Toolbox patterns
 
 ### By Visual Type
 
@@ -182,12 +201,16 @@ VAR Lines = CONCATENATEX(
 Ready-to-use DAX measure expressions in `examples/`:
 - **`sparkline-measure.dax`** -- Line sparkline (polyline + CONCATENATEX)
 - **`progress-bar-measure.dax`** -- Conditional progress bar
-- **`dumbbell-chart-measure.dax`** -- Actual vs target dumbbell (from SpaceParts model)
-- **`bullet-chart-measure.dax`** -- Bullet chart with sentiment action dots (from SpaceParts model)
-- **`overlapping-bars-measure.dax`** -- Overlapping bars with variance label (from SpaceParts model)
-- **`boxplot-measure.dax`** -- Box-and-whisker plot with quartiles and 1.5*IQR whiskers (inspired by DaxLib.SVG)
-- **`ibcs-bar-measure.dax`** -- IBCS-compliant horizontal bar: AC solid vs PY outlined with delta (inspired by avatorl)
-- **`jitter-plot-measure.dax`** -- Dot strip chart with pseudo-random vertical jitter (inspired by DaxLib.SVG)
+- **`dumbbell-chart-measure.dax`** -- Actual vs target dumbbell
+- **`bullet-chart-measure.dax`** -- Bullet chart with sentiment action dots
+- **`overlapping-bars-measure.dax`** -- Overlapping bars with variance label
+- **`boxplot-measure.dax`** -- Box-and-whisker plot (inspired by DaxLib.SVG)
+- **`ibcs-bar-measure.dax`** -- IBCS-compliant horizontal bar (inspired by avatorl)
+- **`jitter-plot-measure.dax`** -- Dot strip chart with jitter (inspired by DaxLib.SVG)
+- **`overlapping-bars-with-variance-measure.dax`** -- Overlapping bars with variance bar + arrow icon + % label (Kurt Buhler / Data Goblins)
+- **`lollipop-conditional-measure.dax`** -- Lollipop with scaled dot + auto-formatted label (Kurt Buhler / Data Goblins)
+- **`waterfall-measure.dax`** -- Waterfall with cumulative OFFSET positioning + connector lines (Kurt Buhler / Data Goblins)
+- **`status-pill-measure.dax`** -- Rounded pill badge with category color + text label (Kurt Buhler / Data Goblins)
 
 ## Helper Libraries
 

@@ -302,9 +302,26 @@ For detailed documentation:
 
 ## Related Skills
 
-- **`pbir-format`** (pbip plugin) -- PBIR JSON format reference
-- **`pbip`** -- PBIP format structure
-- **`r-visuals`** -- R Script visuals (ggplot2)
-- **`python-visuals`** -- Python Script visuals (matplotlib)
-- **`deneb-visuals`** -- Vega/Vega-Lite declarative visuals
-- **`svg-visuals`** -- SVG via DAX measures (lightweight inline graphics)
+### Report Structure and Format
+
+- **`pbir-format`** (pbip plugin) -- PBIR JSON format reference for visual.json, page.json, report.json structure
+- **`pbip`** (pbip plugin) -- PBIP project structure, table/measure renames, project forking
+
+### Custom Visuals
+
+Reports often need visuals beyond what Power BI provides natively. Choose the right tool:
+
+- **`deneb-visuals`** -- Vega/Vega-Lite declarative visuals. Preferred for advanced custom interactive charts (cross-filtering, tooltips, hover). Use when native visuals can't express the chart type needed.
+- **`svg-visuals`** -- SVG via DAX measures. Preferred for simple inline graphics in tables, matrices, and cards (sparklines, data bars, progress bars, status indicators). No interactivity but lightweight and no custom visual registration needed.
+- **`python-visuals`** -- matplotlib/seaborn scripts (static PNG). Preferred for statistical visualizations (distributions, regressions, correlations). No interactivity.
+- **`r-visuals`** -- ggplot2 scripts (static PNG). Preferred for statistical visualizations, particularly where R's ecosystem excels (forecast, pheatmap, corrplot). No interactivity.
+
+### Semantic Model
+
+Reports are highly dependent on the underlying semantic model for their functionality. Most report capabilities -- measures, calculated columns, relationships, hierarchies, row-level security -- are defined in the semantic model, not the report. When designing or modifying reports, you will frequently need to understand or modify the model. Key skills:
+
+- **`tmdl`** (pbip plugin) -- Direct TMDL file editing for measures, columns, relationships
+- **`te-docs`** (tabular-editor plugin) -- Tabular Editor CLI for model operations
+- **`c-sharp-scripting`** (tabular-editor plugin) -- C# scripts for bulk model changes
+- **`bpa-rules`** (tabular-editor plugin) -- Best Practice Analyzer rules for model quality
+- **`connect-pbid`** (pbi-desktop plugin) -- Connect to Power BI Desktop's local Analysis Services instance for live model queries and modifications

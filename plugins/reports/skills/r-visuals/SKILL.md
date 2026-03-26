@@ -11,7 +11,7 @@ description: "This skill should be used when the user asks to 'create an R visua
 >
 > If neither the `pbir-cli` skill nor the `pbir-format` skill is loaded, ask the user to install the appropriate plugin before proceeding with report modifications.
 
-R visuals execute R scripts (primarily ggplot2) to render static PNG images on the Power BI canvas.
+R visuals execute R scripts (primarily ggplot2) to render static PNG images on the Power BI canvas. **ggplot2 is the preferred library** -- its grammar of graphics approach produces clean, publication-quality statistical visualizations with less code. R is particularly strong for statistical visualizations.
 
 ## Visual Identity
 
@@ -25,7 +25,7 @@ R visuals execute R scripts (primarily ggplot2) to render static PNG images on t
 
 ### Step 1: Add the Visual
 
-Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: scriptVisual`, field bindings for `Values:Date.Date` and `Values:Orders.Sales`, positioned at x=40, y=260 with width=800 and height=400.
+Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: scriptVisual`, field bindings for the columns and measures you need (use `Values:Table.Column` or `Values:Table.Measure` format), and position/size as required.
 
 ### Step 2: Write the Script
 
@@ -46,9 +46,22 @@ Critical rules:
 - Access columns by index (`dataset[,1]`) to avoid name escaping issues
 - Use backticks for column names with spaces: `` dataset$`Order Lines` ``
 
+### Step 2b: Review
+
+Before presenting the script to the user, dispatch the `r-reviewer` agent to validate correctness and provide design feedback.
+
 ### Step 3: Inject the Script
 
-Set the script content in the visual's `objects.script[0].properties.source` literal value (see PBIR Format section below). The script text must be escaped as a single-quoted DAX literal string with `\\n` for newlines.
+Set the script content in the visual's `objects.script[0].properties.source` literal value (see PBIR Format section below).
+
+**Escaping rules for visual.json injection:**
+
+The script must be encoded as a single-quoted DAX literal string inside `expr.Literal.Value`:
+
+- Newlines in the script become `\n` in the JSON string
+- Double quotes inside the script (e.g., `"#5B8DBE"`) become `\"` in the JSON string
+- The entire script is wrapped in single quotes: `'library(ggplot2)\n...\nprint(p)'`
+- See `examples/visual/` for a complete real-world visual.json showing this encoding
 
 ### Step 4: Validate
 
@@ -88,6 +101,8 @@ Identical structure to Python visuals except `visualType` is `scriptVisual` and 
 | lattice | 0.22-6 | Trellis graphics |
 
 ~1000 CRAN packages available. **Not supported:** packages requiring networking (RgoogleMaps, mailR).
+
+Full package list: https://learn.microsoft.com/power-bi/connect-data/service-r-packages-support
 
 ### Desktop
 
@@ -160,10 +175,25 @@ if (nrow(dataset) == 0) {
 | Factor control | `factor(x, levels=...)` | `pd.Categorical(x, categories=...)` |
 | Runtime (Service) | R 4.3.3 | Python 3.11 |
 
+## When to Use R Visuals
+
+R visuals are the preferred choice for **statistical and analytical visualizations**, particularly where R's statistical ecosystem excels. Use R visuals when you need:
+
+- Distribution analysis (violin, ridgeline, density, boxplot)
+- Statistical modeling (regression, correlation, ANOVA)
+- Publication-quality analytical charts with ggplot2
+- Packages like forecast, corrplot, pheatmap that have no Python equivalent of equal quality
+
+**Output is static PNG** -- no cross-filtering FROM the visual, no hover/tooltip interactivity. Use Deneb instead for interactive custom visuals. Use SVG measures for simple inline graphics in tables/cards.
+
 ## References
 
+- **`references/community-examples.md`** -- R Graph Gallery examples organized by chart type (distribution, correlation, ranking, evolution, flow)
 - **`references/ggplot2-patterns.md`** -- Common ggplot2 chart patterns (bar, donut, line, heatmap, bullet)
-- **`examples/`** -- Ready-to-use R scripts
+- **`examples/script/`** -- Standalone R scripts (bar-chart, trend-line) -- ready to inject into visual.json after escaping
+- **`examples/visual/bullet-chart.json`** -- PBIR visual.json: bullet chart with conditional coloring, error handling, and extensive escaping
+- **`examples/visual/bar-chart.json`** -- PBIR visual.json: horizontal bar with PY comparison lines and colored account labels
+- **`examples/visual/trend-line.json`** -- PBIR visual.json: area chart with ribbon plot and month factor handling
 
 ## Related Skills
 

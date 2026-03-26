@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "data": {"name": "dataset"},
   "transform": [
-    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "Order Lines", "order": "descending"}]},
+    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "Value", "order": "descending"}]},
     {"filter": "datum.rank <= 10"}
   ],
   "facet": {

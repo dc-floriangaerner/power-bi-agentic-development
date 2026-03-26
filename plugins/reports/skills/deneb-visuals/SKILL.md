@@ -15,7 +15,7 @@ Deneb is a certified custom visual for Power BI that enables Vega and Vega-Lite 
 
 ## Provider Policy
 
-**Always use Vega (full) as the default provider for new Deneb visuals.** Vega provides full control over signals, events, transforms, encode blocks, and interactions -- producing higher-quality, more maintainable specs. Only use Vega-Lite when modifying an existing Deneb visual that already uses Vega-Lite.
+**Prefer to use Vega (full) as the default provider for new Deneb visuals.** Vega provides full control over signals, events, transforms, encode blocks, and interactions -- producing higher-quality, more maintainable specs. Only use Vega-Lite when modifying an existing Deneb visual that already uses Vega-Lite.
 
 ## Visual Identity
 
@@ -29,6 +29,8 @@ Deneb is a certified custom visual for Power BI that enables Vega and Vega-Lite 
 
 Register `deneb7E15AEF80B9E4D4F8E12924291ECE89A` in `report.json` `publicCustomVisuals` array manually. Without this, the visual shows "Can't display this visual."
 
+For more information, use the `pbir-format` skill and check the `report.md` reference.
+
 ```json
 {
   "publicCustomVisuals": ["deneb7E15AEF80B9E4D4F8E12924291ECE89A"]
@@ -39,9 +41,9 @@ Register `deneb7E15AEF80B9E4D4F8E12924291ECE89A` in `report.json` `publicCustomV
 
 ### Step 1: Add the Visual
 
-Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: deneb7E15AEF80B9E4D4F8E12924291ECE89A`, field bindings for `dataset:Date.Date` and `dataset:Orders.Sales`, positioned at x=40, y=260 with width=800 and height=320.
+Create the visual.json file manually (see `pbir-format` skill in the pbip plugin for JSON structure) with `visualType: deneb7E15AEF80B9E4D4F8E12924291ECE89A`, field bindings for the columns and measures you need, and position/size as required.
 
-All fields bind to the single `dataset` role. Use `Table.Column` for columns and `Table.Measure` for measures.
+All fields bind to the single `dataset` role. Use `Table.Column` for columns and `Table.Measure` for measures. Field names in bindings must match those used in the Vega/Vega-Lite spec.
 
 ### Step 2: Write the Vega Spec
 
@@ -55,8 +57,8 @@ Create a Vega JSON spec file. In Vega, `data` is an **array** of named datasets:
   "height": {"signal": "pbiContainerHeight - 27"},
   "padding": 5,
   "scales": [
-    {"name": "x", "type": "band", "domain": {"data": "dataset", "field": "Date"}, "range": "width", "padding": 0.1},
-    {"name": "y", "type": "linear", "domain": {"data": "dataset", "field": "Sales"}, "range": "height", "nice": true, "zero": true}
+    {"name": "x", "type": "band", "domain": {"data": "dataset", "field": "Category"}, "range": "width", "padding": 0.1},
+    {"name": "y", "type": "linear", "domain": {"data": "dataset", "field": "Value"}, "range": "height", "nice": true, "zero": true}
   ],
   "axes": [
     {"orient": "bottom", "scale": "x"},
@@ -68,9 +70,9 @@ Create a Vega JSON spec file. In Vega, `data` is an **array** of named datasets:
       "from": {"data": "dataset"},
       "encode": {
         "enter": {
-          "x": {"scale": "x", "field": "Date"},
+          "x": {"scale": "x", "field": "Category"},
           "width": {"scale": "x", "band": 1},
-          "y": {"scale": "y", "field": "Sales"},
+          "y": {"scale": "y", "field": "Value"},
           "y2": {"scale": "y", "value": 0}
         },
         "update": {"fill": {"signal": "pbiColor(0)"}},
@@ -86,6 +88,24 @@ Field names in the spec must match the `nativeQueryRef` (display name) from the 
 ### Step 3: Inject the Spec
 
 Set the spec and config in the visual's `objects.vega[0].properties` as single-quoted DAX literal strings. The `jsonSpec` property holds the Vega spec (stringified JSON), `jsonConfig` holds the config, and `provider` is set to `'vega'` or `'vegaLite'`. See the PBIR structure reference (`references/pbir-structure.md`) for the full encoding pattern.
+
+**Escaping rules for visual.json injection:**
+
+The spec JSON must be stringified into a single line and wrapped in single quotes inside the `expr.Literal.Value`:
+
+```json
+"jsonSpec": {"expr": {"Literal": {"Value": "'{\"$schema\":\"...\",\"data\":{\"name\":\"dataset\"},\"marks\":[...]}'" }}}
+```
+
+- The entire JSON spec is flattened to one line
+- All inner double quotes (`"`) become `\"` (standard JSON string escaping)
+- The stringified JSON is wrapped in single quotes: `'...'`
+- Field names with spaces inside Vega expressions use doubled single quotes: `datum[''Sales Amount'']`
+- See `examples/visual/` for complete real-world visual.json files showing this encoding
+
+### Step 3b: Review
+
+Before presenting the spec to the user, dispatch the `deneb-reviewer` agent to validate syntax and provide design feedback.
 
 ### Step 4: Validate
 
@@ -174,16 +194,29 @@ Deneb injects `__identity__` (row context), `__selected__` (selection state), an
 9. **Avoid external data** -- AppSource certification prevents loading external URLs
 10. **Double quotes only** in expressions -- never single quotes (see escaping rules)
 
+## When to Use Deneb
+
+Deneb is the preferred choice for **advanced custom visuals** that need interactivity (cross-filtering, tooltips, hover effects) and go beyond what native Power BI visuals offer. Use Deneb when you need:
+
+- Custom chart types not available natively (bullet charts, beeswarms, sankeys, etc.)
+- Fine-grained control over visual encoding, animation, and interactivity
+- Vector-based rendering (crisp at any size)
+
+**Use SVG measures instead** for simple inline graphics in tables/cards (sparklines, data bars, progress bars) where interactivity is not needed. **Use Python/R instead** for statistical visualizations (distribution analysis, regression, correlation) where the focus is analytical rigor over interactivity.
+
 ## References
 
+- **`references/community-examples.md`** -- 170+ community templates organized by chart type, with author citations and direct links
 - **`references/vega-patterns.md`** -- Vega chart patterns (bar, line, scatter, donut, stacked, heatmap, area, lollipop, bullet, KPI card), standard config, transforms and scales reference
 - **`references/vega-lite-patterns.md`** -- Vega-Lite chart patterns (for editing existing Vega-Lite visuals only)
 - **`references/pbir-structure.md`** -- PBIR JSON structure (literal encoding, query state, interactivity example)
 - **`references/capabilities.md`** -- Full Deneb object properties reference and template format
-- **`examples/deneb-bullet-chart-visual.json`** -- Complete PBIR visual.json from a real bullet chart report (Vega-Lite, with JSONC comments, conditional indicators, cross-filtering)
-- **`examples/deneb-kpi-card-visual.json`** -- Complete PBIR visual.json for a KPI card (Vega-Lite, layered text with % change)
-- **`examples/vega/`** -- Ready-to-inject Vega spec files (bar-chart, line-chart)
-- **`examples/vega-lite/`** -- Ready-to-inject Vega-Lite spec files (bullet-chart, kpi-card)
+- **`examples/visual/bullet-chart.json`** -- PBIR visual.json: faceted bullet chart with conditional indicators and cross-filtering (Vega-Lite)
+- **`examples/visual/kpi-card.json`** -- PBIR visual.json: KPI card with layered text and conditional % change coloring (Vega-Lite)
+- **`examples/visual/trend-line.json`** -- PBIR visual.json: dual-series line chart with fold transform and color/legend mapping (Vega-Lite)
+- **`examples/visual/ytd-comparison.json`** -- PBIR visual.json: YTD vs target with dashed lines, endpoint labels, number formatting, and rank-based filtering (Vega-Lite)
+- **`examples/spec/vega/`** -- Standalone Vega spec files (bar-chart, line-chart) -- ready to inject into visual.json after escaping
+- **`examples/spec/vega-lite/`** -- Standalone Vega-Lite spec files (bullet-chart, kpi-card) -- ready to inject after escaping
 - **`examples/standard-config.json`** -- Standard config for all Deneb specs
 
 ## Related Skills

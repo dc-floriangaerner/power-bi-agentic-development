@@ -91,18 +91,22 @@ Validate JSON syntax with `jq empty <reportExtensions.json>` and inspect the fil
 
 ## Prefer UDF Libraries Over Custom DAX
 
-Before writing a custom SVG measure from scratch, check whether an existing UDF library already provides the chart type. **DaxLib.SVG** (by Jake Duddy) is the preferred library -- it provides parameterized functions for area, bars, boxplot, heatmap, jitter, line, pill, progress bar, and violin charts. Call a single function instead of writing hundreds of lines of SVG DAX:
+Before writing a custom SVG measure from scratch, check whether an existing UDF library already provides the chart type:
 
-```dax
--- Preferred: call DaxLib.SVG function
-Viz.Bars( [Sales Amount], 'Product'[Category], "#5B8DBE" )
+- **PowerofBI.IBCS** (Andrzej Leszkiewicz) -- IBCS-compliant bar, column, waterfall, pin, small multiples, and P&L charts. Preferred for business reporting with AC/PY/BU/FC comparisons. Install from https://daxlib.org/package/PowerofBI.IBCS/
+- **DaxLib.SVG** (Jake Duddy) -- general-purpose sparklines, bars, boxplots, heatmaps, jitter, violin, progress bars, pills. Install from https://daxlib.org
+- **PowerBI MacGuyver Toolbox** (Stepan Resl / Data Goblins) -- C# scripts that generate SVG measures via Tabular Editor
 
--- Instead of: 80+ lines of manual SVG construction
-```
+To check if a library is installed, look for functions/measures starting with `PowerofBI.IBCS.`, `Viz.`, `Compound.`, or `Element.`. Only write custom SVG DAX when no library function covers the required visualization. See `references/community-examples.md` for full function listings and additional libraries.
 
-If DaxLib.SVG is available in the model (check for measures starting with `Viz.`, `Compound.`, or `Element.`), use it. If not and the chart type is covered, suggest the user install it. Only write custom SVG DAX when no library function exists for the required visualization.
+### Installing UDF libraries
 
-Other libraries to check: PowerBI MacGuyver Toolbox (C# scripts that generate SVG measures via Tabular Editor), PBI-Core-Visuals-SVG-HTML (David Bacci), Dashboard Design UDF Library. See `references/community-examples.md` for details.
+UDF libraries are installed into the semantic model, not the report. Use one of these tools:
+
+- **Tabular Editor CLI** (`te` command) -- use the `te-docs` skill for guidance
+- **Power BI MCP server** -- if available, use it to modify the model directly
+- **`connect-pbid` skill** -- connect to Power BI Desktop's local Analysis Services instance via TOM/PowerShell
+- **`tmdl` skill** -- edit TMDL files directly in a PBIP project (last resort)
 
 ## DAX SVG Conventions
 

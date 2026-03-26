@@ -10,11 +10,7 @@
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
 
-> **These skills are under active development with a daily release cadence.** Breaking changes, new skills, and restructuring may occur frequently. Install via the marketplace and enable auto-update to stay current:
-> ```bash
-> claude plugin marketplace add data-goblin/power-bi-agentic-development
-> claude plugin auto-update enable
-> ```
+> **These skills are under active development with a daily release cadence.** Breaking changes, new skills, and restructuring may occur frequently.
 
 ---
 

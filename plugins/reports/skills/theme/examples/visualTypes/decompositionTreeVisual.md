@@ -15,34 +15,47 @@ AI-assisted hierarchical breakdown visual for exploring root causes and contribu
 
 ```json
 {
-  "decompositionTreeVisual": {
-    "levelHeader": {
-      "levelTitleFontFamily": "Segoe UI Semibold",
-      "levelTitleFontSize": 11,
-      "levelTitleFontColor": { "solid": { "color": "#252423" } },
-      "levelTitleBold": false,
-      "levelSubtitleFontFamily": "Segoe UI",
-      "levelSubtitleFontSize": 9,
-      "levelSubtitleFontColor": { "solid": { "color": "#605E5C" } },
-      "levelHeaderBackgroundColor": { "solid": { "color": "#F3F2F1" } },
-      "showSubtitles": true
-    },
-    "dataLabels": {
-      "dataLabelFontFamily": "Segoe UI",
-      "dataLabelFontSize": 10,
-      "dataLabelFontColor": { "solid": { "color": "#252423" } },
-      "dataLabelBold": false
-    },
-    "dataBars": {
-      "positiveBarColor": { "solid": { "color": "#0078D4" } },
-      "negativeBarColor": { "solid": { "color": "#D13438" } },
-      "dataBarWidthPercentage": 80
-    },
-    "categoryLabels": {
-      "categoryLabelFontFamily": "Segoe UI",
-      "categoryLabelFontSize": 10,
-      "categoryLabelFontColor": { "solid": { "color": "#252423" } },
-      "categoryLabelBold": false
+  "name": "My Theme",
+  "visualStyles": {
+    "decompositionTreeVisual": {
+      "*": {
+        "levelHeader": [
+          {
+            "levelTitleFontFamily": "Segoe UI Semibold",
+            "levelTitleFontSize": 11,
+            "levelTitleFontColor": { "solid": { "color": "#252423" } },
+            "levelTitleBold": false,
+            "levelSubtitleFontFamily": "Segoe UI",
+            "levelSubtitleFontSize": 9,
+            "levelSubtitleFontColor": { "solid": { "color": "#605E5C" } },
+            "levelHeaderBackgroundColor": { "solid": { "color": "#F3F2F1" } },
+            "showSubtitles": true
+          }
+        ],
+        "dataLabels": [
+          {
+            "dataLabelFontFamily": "Segoe UI",
+            "dataLabelFontSize": 10,
+            "dataLabelFontColor": { "solid": { "color": "#252423" } },
+            "dataLabelBold": false
+          }
+        ],
+        "dataBars": [
+          {
+            "positiveBarColor": { "solid": { "color": "#0078D4" } },
+            "negativeBarColor": { "solid": { "color": "#D13438" } },
+            "dataBarWidthPercentage": 80
+          }
+        ],
+        "categoryLabels": [
+          {
+            "categoryLabelFontFamily": "Segoe UI",
+            "categoryLabelFontSize": 10,
+            "categoryLabelFontColor": { "solid": { "color": "#252423" } },
+            "categoryLabelBold": false
+          }
+        ]
+      }
     }
   }
 }

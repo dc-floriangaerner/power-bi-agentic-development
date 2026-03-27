@@ -14,18 +14,27 @@ AI visual that analyses a metric to surface the factors (influencers) that drive
 
 ```json
 {
-  "keyDriversVisual": {
-    "keyInfluencersVisual": {
-      "canvasColor": { "solid": { "color": "#FFFFFF" } },
-      "primaryColor": { "solid": { "color": "#0078D4" } },
-      "secondaryColor": { "solid": { "color": "#E1DFDD" } },
-      "fontColor": { "solid": { "color": "#252423" } },
-      "primaryFontColor": { "solid": { "color": "#FFFFFF" } },
-      "secondaryFontColor": { "solid": { "color": "#252423" } }
-    },
-    "keyDriversDrillVisual": {
-      "defaultColor": { "solid": { "color": "#0078D4" } },
-      "referenceLineColor": { "solid": { "color": "#D13438" } }
+  "name": "My Theme",
+  "visualStyles": {
+    "keyDriversVisual": {
+      "*": {
+        "keyInfluencersVisual": [
+          {
+            "canvasColor": { "solid": { "color": "#FFFFFF" } },
+            "primaryColor": { "solid": { "color": "#0078D4" } },
+            "secondaryColor": { "solid": { "color": "#E1DFDD" } },
+            "fontColor": { "solid": { "color": "#252423" } },
+            "primaryFontColor": { "solid": { "color": "#FFFFFF" } },
+            "secondaryFontColor": { "solid": { "color": "#252423" } }
+          }
+        ],
+        "keyDriversDrillVisual": [
+          {
+            "defaultColor": { "solid": { "color": "#0078D4" } },
+            "referenceLineColor": { "solid": { "color": "#D13438" } }
+          }
+        ]
+      }
     }
   }
 }

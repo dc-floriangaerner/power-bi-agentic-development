@@ -53,23 +53,46 @@ find Report.Report/definition/pages -name "visual.json" -print0 | \
 For each flagged visual, extract the override inventory:
 
 ```bash
-jq '{
-  path: input_filename,
-  visualType: .visual.visualType,
-  objectKeys: (.visual.objects | keys // []),
-  vcoKeys: (.visual.visualContainerObjects | keys // [])
-}' visual.json
+# Note: input_filename does not work when reading from xargs stdin.
+# Use --arg to pass the filename explicitly:
+for f in $(find Report.Report/definition/pages -name "visual.json"); do
+  jq --arg path "$f" '{
+    path: $path,
+    visualType: .visual.visualType,
+    objectKeys: (.visual.objects | keys // []),
+    vcoKeys: (.visual.visualContainerObjects | keys // [])
+  }' "$f"
+done
 ```
 
 ### Step 3 — Classify Each Override
 
-For each key in `objectKeys` and `vcoKeys`, compare the visual's value against the theme:
+For each key in `objectKeys` and `vcoKeys`, compare the visual's value against the theme.
+
+In `visual.json`, properties are wrapped in a `"properties"` envelope with expr values:
+```json
+"title": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}]
+```
+
+In theme JSON, container values are stored directly:
+```json
+"title": [{"show": true, "fontSize": 14}]
+```
+
+To extract and compare title visibility:
 
 ```bash
-# Example: compare a visual's title setting against the theme wildcard
-VISUAL_TITLE=$(jq '.visual.visualContainerObjects.title[0].show' visual.json)
+# Extract from visual.json (properties envelope → expr → Literal value)
+VISUAL_TITLE=$(jq '.visual.visualContainerObjects.title[0].properties.show.expr.Literal.Value' visual.json)
+# "true" or "false" as a JSON string
+
+# Extract from theme (bare value)
 THEME_TITLE=$(jq '.visualStyles["*"]["*"].title[0].show' "$THEME")
+# true or false as a JSON boolean
+
 echo "Visual: $VISUAL_TITLE | Theme: $THEME_TITLE"
+# Note: visual returns a quoted string ("false"), theme returns an unquoted boolean (false)
+# They match semantically if both represent the same state
 ```
 
 If they match → stale override, safe to remove.
@@ -140,8 +163,9 @@ The theme's `textClasses.label.fontFace` was updated to Segoe UI, but 12 line ch
 
 **Detection:**
 ```bash
-find Report.Report/definition/pages -name "visual.json" -print0 | \
-  xargs -0 jq -r 'select(.visual.objects.categoryAxis != null) | input_filename'
+for f in $(find Report.Report/definition/pages -name "visual.json"); do
+  jq --arg path "$f" -e '.visual.objects.categoryAxis != null' "$f" > /dev/null 2>&1 && echo "$f"
+done
 ```
 
 ### Shadow Left On After Theme Change

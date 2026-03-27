@@ -13,15 +13,24 @@ AI-generated natural language summary visual that produces text descriptions of 
 
 ```json
 {
-  "aiNarratives": {
-    "text": {
-      "fontColor": { "solid": { "color": "#252423" } },
-      "fontFamily": "Segoe UI",
-      "fontSize": 11,
-      "textAlignment": "Left"
-    },
-    "summary": {
-      "autoRefresh": false
+  "name": "My Theme",
+  "visualStyles": {
+    "aiNarratives": {
+      "*": {
+        "text": [
+          {
+            "fontColor": { "solid": { "color": "#252423" } },
+            "fontFamily": "Segoe UI",
+            "fontSize": 11,
+            "textAlignment": "Left"
+          }
+        ],
+        "summary": [
+          {
+            "autoRefresh": false
+          }
+        ]
+      }
     }
   }
 }

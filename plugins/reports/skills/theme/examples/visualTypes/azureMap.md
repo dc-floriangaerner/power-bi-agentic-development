@@ -19,27 +19,38 @@ Azure Maps visual supporting multiple layer types: bubbles, heat maps, filled re
 
 ```json
 {
-  "azureMap": {
-    "bubbleLayer": {
-      "show": true,
-      "fillColor": { "solid": { "color": "#0078D4" } },
-      "bubbleRadius": 8,
-      "mapTransparency": 20,
-      "clusteringEnabled": false
-    },
-    "filledMap": {
-      "show": false,
-      "defaultColor": { "solid": { "color": "#0078D4" } },
-      "strokeColor": { "solid": { "color": "#FFFFFF" } },
-      "strokeWidth": 1,
-      "mapTransparency": 20
-    },
-    "legend": {
-      "show": true,
-      "position": "Bottom",
-      "labelColor": { "solid": { "color": "#252423" } },
-      "fontSize": 10,
-      "fontFamily": "Segoe UI"
+  "name": "My Theme",
+  "visualStyles": {
+    "azureMap": {
+      "*": {
+        "bubbleLayer": [
+          {
+            "show": true,
+            "fillColor": { "solid": { "color": "#0078D4" } },
+            "bubbleRadius": 8,
+            "mapTransparency": 20,
+            "clusteringEnabled": false
+          }
+        ],
+        "filledMap": [
+          {
+            "show": false,
+            "defaultColor": { "solid": { "color": "#0078D4" } },
+            "strokeColor": { "solid": { "color": "#FFFFFF" } },
+            "strokeWidth": 1,
+            "mapTransparency": 20
+          }
+        ],
+        "legend": [
+          {
+            "show": true,
+            "position": "Bottom",
+            "labelColor": { "solid": { "color": "#252423" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ]
+      }
     }
   }
 }

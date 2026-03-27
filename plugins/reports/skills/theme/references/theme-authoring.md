@@ -43,7 +43,6 @@ Add a `$schema` property as the first key to enable IDE autocomplete and inline 
 ```
 
 Use the versioned GitHub URL when authoring or editing themes. Use the generic `powerbi.com` URL only if it was already present in an exported theme and you're not changing it.
-```
 
 The schema is versioned monthly alongside Power BI Desktop releases (pattern: `reportThemeSchema-2.{version}.json`). The latest as of March 2026 is `2.152` (exploration version 5.71). Target the version matching the Desktop release the report consumers are using.
 
@@ -151,30 +150,32 @@ Text classes define font properties by semantic role. Every defined class overri
   "callout": {
     "fontSize": 32,
     "fontFace": "Segoe UI",
-    "color": {"solid": {"color": "#343a40"}}
+    "color": "#343a40"
   },
   "title": {
     "fontSize": 14,
     "fontFace": "Segoe UI Semibold",
-    "color": {"solid": {"color": "#343a40"}}
+    "color": "#343a40"
   },
   "header": {
     "fontSize": 12,
     "fontFace": "Segoe UI Semibold",
-    "color": {"solid": {"color": "#343a40"}}
+    "color": "#343a40"
   },
   "label": {
     "fontSize": 11,
     "fontFace": "Segoe UI",
-    "color": {"solid": {"color": "#495057"}}
+    "color": "#495057"
   },
   "dataTitle": {
     "fontSize": 12,
     "fontFace": "Segoe UI",
-    "color": {"solid": {"color": "#868e96"}}
+    "color": "#868e96"
   }
 }
 ```
+
+> **Note:** `textClasses` colors use a plain hex string (`"color": "#343a40"`), NOT the `{"solid":{"color":"..."}}` object wrapper. The nested wrapper is correct in `visualStyles` but wrong in `textClasses` — using it in textClasses causes the color to be silently ignored.
 
 ---
 
@@ -194,8 +195,7 @@ At a minimum, set:
         "show": true,
         "fontSize": 14,
         "fontFamily": "Segoe UI Semibold",
-        "fontColor": {"solid": {"color": "#343a40"}},
-        "background": {"solid": {"color": {"ThemeDataColor": {"ColorId": 7, "Percent": 0}}}}
+        "fontColor": {"solid": {"color": "#343a40"}}
       }],
       "background": [{"show": false}],
       "border": [{"show": false}],

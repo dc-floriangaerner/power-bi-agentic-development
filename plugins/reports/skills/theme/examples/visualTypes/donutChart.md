@@ -11,7 +11,7 @@ Donut chart — a pie chart with a hollow centre; container set is identical to 
 | `dataPoint` | `fill`, `defaultColor`, `fillTransparency`, `borderShow`, `borderColor` |
 | `slices` | `innerRadiusRatio`, `startAngle` |
 
-`labels.position` values: `outside`, `inside`, `preferOutside`, `preferInside`
+`labels.position` values: `Outside`, `Inside`, `BestFit` (PascalCase — lowercase values are silently ignored by Power BI)
 
 `legend.position` enum: `Top`, `TopCenter`, `TopRight`, `Left`, `Right`, `LeftCenter`, `RightCenter`, `Bottom`, `BottomCenter`, `BottomRight`
 
@@ -29,7 +29,7 @@ Donut chart — a pie chart with a hollow centre; container set is identical to 
             "fontSize": 11,
             "fontFamily": "Segoe UI",
             "color": { "solid": { "color": "#252423" } },
-            "position": "outside",
+            "position": "Outside",
             "labelStyle": "Percent of total"
           }
         ],

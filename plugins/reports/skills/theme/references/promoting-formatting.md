@@ -95,6 +95,20 @@ Visual-type overrides always win over the wildcard. So:
 
 ## Step-by-Step Promotion Workflow
 
+### Using pbir CLI (recommended)
+
+If the `pbir` CLI is available, use the dedicated command:
+
+```bash
+# Preview what would be promoted (no changes made)
+pbir theme push-visual "Report.Report/PageName/VisualName.Visual" --dry-run
+
+# Promote and write to theme
+pbir theme push-visual "Report.Report/PageName/VisualName.Visual"
+```
+
+This automatically handles extracting formatting from `visual.json`, excluding instance-specific properties, and writing to the theme file. Use the manual jq workflow below only as a fallback when `pbir` is not installed.
+
 ### 1. Identify What to Promote
 
 Read a visual.json and inspect both scopes:
@@ -137,7 +151,7 @@ jq '.visualStyles.lineChart["*"].legend = [{"position": "Bottom", "show": true}]
 jq empty "$THEME"
 
 # Example: promote title font to the wildcard (applies to all visuals)
-jq '.visualStyles["*"]["*"].title[0].fontFamily = "'\'Segoe UI Semibold\'', wf_segoe-ui_semibold, helvetica, arial, sans-serif"' \
+jq '.visualStyles["*"]["*"].title[0].fontFamily = "Segoe UI Semibold"' \
   "$THEME" > "$THEME.tmp" && mv "$THEME.tmp" "$THEME"
 jq empty "$THEME"
 
@@ -209,10 +223,10 @@ These vary by visual type. The table below shows common ones; the theme JSON sch
 | All charts | `objects.legend[0].show` | `visualStyles["<type>"]["*"].legend[0].show` |
 | Line/Bar/Area | `objects.categoryAxis[0].fontSize` | `visualStyles["<type>"]["*"].categoryAxis[0].fontSize` |
 | Line/Bar/Area | `objects.valueAxis[0].start` | `visualStyles["<type>"]["*"].valueAxis[0].start` |
-| Line/Bar/Area | `objects.labels[0].show` | `visualStyles["<type>"]["*"].labels[0].show` |
+| Line/Bar/Area | `objects.dataLabels[0].show` | `visualStyles["<type>"]["*"].dataLabels[0].show` |
 | Card | `objects.labels[0].fontSize` | `visualStyles.card["*"].labels[0].fontSize` |
 | KPI | `objects.indicator[0].fontSize` | `visualStyles.kpi["*"].indicator[0].fontSize` |
-| Slicer | `objects.items[0].fontSize` | `visualStyles.slicer["*"].items[0].fontSize` |
+| Slicer | `objects.items[0].textSize` | `visualStyles.slicer["*"].items[0].textSize` |
 | Table | `objects.columnHeaders[0].fontSize` | `visualStyles.tableEx["*"].columnHeaders[0].fontSize` |
 | Matrix | `objects.rowHeaders[0].fontSize` | `visualStyles.matrix["*"].rowHeaders[0].fontSize` |
 

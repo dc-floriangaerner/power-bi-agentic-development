@@ -1,7 +1,7 @@
 {
-  "name": "pbi-desktop",
+  "name": "tabular-editor",
   "version": "0.8.3",
-  "description": "Connect to Power BI Desktop's local Analysis Services instance via TOM and ADOMD.NET. No MCP server required.",
+  "description": "Agentic development tools for Power BI semantic models with Tabular Editor.",
   "author": {
     "name": "Kurt Buhler",
     "url": "https://data-goblins.com"
@@ -9,5 +9,5 @@
   "homepage": "https://data-goblins.com",
   "repository": "https://github.com/data-goblin/power-bi-agentic-development",
   "license": "GPL-3.0",
-  "keywords": ["power-bi", "pbi-desktop", "analysis-services", "tom", "adomd", "dax"]
+  "keywords": ["power-bi", "tabular-editor", "bpa", "semantic-model", "csharp", "tmdl"]
 }

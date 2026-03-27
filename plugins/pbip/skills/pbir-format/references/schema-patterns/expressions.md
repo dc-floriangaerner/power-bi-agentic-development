@@ -298,7 +298,7 @@ Maps numeric measure values to three-point color gradients (min, mid, max):
       "linearGradient3": {
         "min": {
           "color": {"Literal": {"Value": "'#f0a787'"}},
-          "value": {"Literal": {"Value": "0D"}}
+          "value": {"Literal": {"Value": "-1D"}}
         },
         "mid": {
           "color": {"Literal": {"Value": "'#FFFFFF'"}},
@@ -306,7 +306,7 @@ Maps numeric measure values to three-point color gradients (min, mid, max):
         },
         "max": {
           "color": {"Literal": {"Value": "'#999999'"}},
-          "value": {"Literal": {"Value": "0D"}}
+          "value": {"Literal": {"Value": "1D"}}
         },
         "nullColoringStrategy": {
           "strategy": {"Literal": {"Value": "'asZero'"}}

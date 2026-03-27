@@ -80,9 +80,9 @@ SUMMARIZECOLUMNS(
 | card (old card) | - | Values |
 | cardVisual (new card) | - | Data |
 | lineChart | Category | Y (also Y2 for combo) |
-| barChart / clusteredBarChart | Category | Y |
-| columnChart / clusteredColumnChart | Category | Y |
-| areaChart / stackedAreaChart | Category | Y (also Series) |
+| barChart / clusteredBarChart / hundredPercentStackedBarChart | Category | Y |
+| columnChart / clusteredColumnChart / hundredPercentStackedColumnChart | Category | Y |
+| areaChart / stackedAreaChart / hundredPercentStackedAreaChart | Category, Series (optional breakdown) | Y |
 | waterfallChart / ribbonChart / donutChart | Category | Y |
 | Slicer | Values | - |
 | KPI | TrendLine (when bound) | Indicator, Goal |

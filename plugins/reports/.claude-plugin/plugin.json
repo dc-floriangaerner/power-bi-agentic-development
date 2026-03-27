@@ -1,6 +1,6 @@
 {
   "name": "reports",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Skills, agents, and resources for agentic development of reports.",
   "author": {
     "name": "Kurt Buhler",

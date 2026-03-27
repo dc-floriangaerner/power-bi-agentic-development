@@ -228,7 +228,7 @@ These vary by visual type. The table below shows common ones; the theme JSON sch
 | KPI | `objects.indicator[0].fontSize` | `visualStyles.kpi["*"].indicator[0].fontSize` |
 | Slicer | `objects.items[0].textSize` | `visualStyles.slicer["*"].items[0].textSize` |
 | Table | `objects.columnHeaders[0].fontSize` | `visualStyles.tableEx["*"].columnHeaders[0].fontSize` |
-| Matrix | `objects.rowHeaders[0].fontSize` | `visualStyles.matrix["*"].rowHeaders[0].fontSize` |
+| Matrix | `objects.rowHeaders[0].fontSize` | `visualStyles.pivotTable["*"].rowHeaders[0].fontSize` |
 
 ---
 

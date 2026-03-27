@@ -129,7 +129,7 @@ If you move all extension measures to the semantic model (e.g., from `reportExte
 - `formatString` - VBA-style format string (e.g., `"#,0.00"`)
 - `description` - Documentation string
 - `displayFolder` - Organize in field list (e.g., `"Colors\\Status"`)
-- `dataCategory` - Extended category (e.g., `"WebURL"`, `"ImageURL"`)
+- `dataCategory` - Extended category (e.g., `"WebUrl"`, `"ImageUrl"`)
 - `annotations` - Custom metadata (array of name/value pairs)
 - `measureTemplate` - Template tracking info (for DAX templates)
 

@@ -1,6 +1,6 @@
 {
   "name": "semantic-models",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "Skills, agents, and resources for agentic development of semantic models.",
   "author": {
     "name": "Kurt Buhler",

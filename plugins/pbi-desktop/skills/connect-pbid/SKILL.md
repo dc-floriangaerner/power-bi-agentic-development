@@ -564,6 +564,8 @@ $files | Select-Object filePath, lastAccessedDate | Format-Table -AutoSize
 
 The first entry is the most recently opened file. Files on the Mac (via Parallels) appear as `\\Mac\Home\...` paths.
 
+> **Limitation:** This is an imperfect method — it reads recent file history, not the currently open file. If multiple PBI Desktop instances are open, or the most recently accessed file in history isn't the one currently open, the result may be wrong. Confirm with the user if there is any ambiguity.
+
 **Fallback — window title (non-Store PBI Desktop only):**
 
 ```powershell

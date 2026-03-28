@@ -1,0 +1,17 @@
+{
+  "description": "Validates JSON syntax in PBIP project files after every Write/Edit",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-pbip-json.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

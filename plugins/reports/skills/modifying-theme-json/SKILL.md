@@ -1,6 +1,6 @@
 ---
-name: theme
-version: 0.9.0
+name: modifying-theme-json
+version: 0.10.0
 description: "This skill should be used when the user asks to 'create a theme', 'design a theme', 'build a theme from scratch', 'apply a theme to the report', 'enforce theme compliance', 'audit theme adherence', 'push formatting to theme', 'promote bespoke formatting to theme', 'clear visual overrides', 'make all visuals consistent with the theme', 'standardize report formatting', 'set up a theme', 'update theme colors', 'change theme typography', 'set theme text classes', 'validate a theme', 'add visual-type overrides to the theme', 'ensure visuals use theme defaults', or needs to design, enforce, audit, or validate a Power BI report theme beyond simple JSON inspection."
 ---
 

@@ -692,6 +692,7 @@ fab api -A powerbi "groups/$WS_ID/users" -q "value[?emailAddress=='your@email.co
 6. **Documentation**: Maintain workspace descriptions
 7. **Monitoring**: Track workspace activity and growth
 8. **Cleanup**: Remove unused workspaces regularly
+9. **Folder organization**: For workspaces with 15+ items, group items into folders by function (ETL, Reports, Semantic Models) or by domain; see [Folders](./folders.md) for operations and recommended structures
 
 ## Performance Tips
 

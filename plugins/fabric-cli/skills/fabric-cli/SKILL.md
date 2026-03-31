@@ -1,6 +1,6 @@
 ---
 name: fabric-cli
-version: 0.10.0
+version: 0.11.4
 description: This skill should be used when the user asks to "use the Fabric CLI", "run fab commands", "deploy Fabric items", "manage Fabric workspaces", "query a lakehouse", "refresh a semantic model via CLI", "run a Fabric notebook", "manage OneLake files", "automate Fabric operations", or mentions fab, Fabric CLI, or Fabric item management. Provides expert guidance for the fab CLI covering navigation, deployment, jobs, APIs, and automation.
 ---
 
@@ -347,7 +347,7 @@ fab <command> --help
 - [Org Apps](./references/org-apps.md) - Read-only API for distributed content packages
 - [Scorecards](./references/scorecards.md) - Goals, check-ins, status rules (Preview API)
 - [Gateways](./references/gateways.md) - Datasources, credentials, dataset binding
-- [Folders](./references/folders.md) - Organize items into folders via API
+- [Folders](./references/folders.md) - Organize items into folders via API; includes best practices for structuring workspaces
 - [fab vs az CLI](./references/fab-vs-az-cli.md) - When to use which; capacity, networking, Key Vault, monitoring, CMK, CI/CD
 - [Admin APIs](./references/admin.md) - Cross-workspace search, tenant operations, governance
 - [API Reference](./references/fab-api.md) - Capacities, domains, misc API patterns

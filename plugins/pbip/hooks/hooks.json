@@ -13,12 +13,14 @@
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-tmdl.sh",
-            "timeout": 10
+            "timeout": 10,
+            "if": "Write|Edit(*.tmdl*)"
           },
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-report-binding.sh",
-            "timeout": 10
+            "timeout": 10,
+            "if": "Write|Edit(*definition.pbir*)"
           }
         ]
       },

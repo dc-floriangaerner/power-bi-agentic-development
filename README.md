@@ -112,8 +112,12 @@ copilot plugin install data-goblin/power-bi-agentic-development
 
 | Hook | Plugin | Trigger | Description |
 |------|--------|---------|-------------|
-| PBIR validation hooks (2) | pbip | `Write\|Edit` or `Bash` on `.Report/` `.json`/`.pbir` files | Automatically validates pbir; prevents agent mistakes |
-| TMDL validation hooks (2) | pbip | `Write\|Edit` or `Bash` on `.tmdl` files | Automatically validates TMDL; prevents agent mistakes; doesn't parse DAX/M |
+| PBIR validation | pbip | `Write\|Edit` or `Bash` on `.Report/` `.json`/`.pbir` files | Validates PBIR structure, required fields, naming conventions, and schema URLs |
+| Report binding validation | pbip | `Write\|Edit` or `Bash` on `definition.pbir` | Validates that a valid semantic model is connected to the report (byPath directory exists; byConnection model exists via `fab exists`) |
+| TMDL validation | pbip | `Write\|Edit` or `Bash` on `.tmdl` files | Validates TMDL structural syntax; doesn't parse DAX/M |
+
+> [!NOTE]
+> Hook checks can be individually toggled via `plugins/pbip/hooks/config.yaml`. All checks are enabled by default. Set any check to `false` to disable it; for example, set `fab_exists: false` if you don't have the Fabric CLI installed.
 
 ### Agents
 

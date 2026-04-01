@@ -1,5 +1,5 @@
 {
-  "description": "Validates PBIP project files (JSON syntax + TMDL structure) after Write/Edit and Bash modifications",
+  "description": "Validates PBIP project files (PBIR structure, TMDL syntax, report binding) after Write/Edit and Bash modifications",
   "hooks": {
     "PostToolUse": [
       {
@@ -7,13 +7,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-pbip-json.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-pbir.sh",
             "timeout": 10
           },
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-tmdl.sh",
-            "timeout": 10
+            "timeout": 10,
+            "if": "Write|Edit(*.tmdl*)"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-report-binding.sh",
+            "timeout": 10,
+            "if": "Write|Edit(*definition.pbir*)"
           }
         ]
       },
@@ -22,15 +29,21 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-pbir-bash.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-pbir.sh",
             "timeout": 10,
             "if": "Bash(*.Report/*)"
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-tmdl-bash.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-tmdl.sh",
             "timeout": 10,
             "if": "Bash(*.tmdl*)"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/validate-report-binding.sh",
+            "timeout": 10,
+            "if": "Bash(*definition.pbir*)"
           }
         ]
       }

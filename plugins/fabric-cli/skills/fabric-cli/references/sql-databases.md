@@ -52,18 +52,13 @@ For full DuckDB patterns, see [querying-data.md](./querying-data.md).
 
 SQL databases support full T-SQL DDL/DML. Data can be loaded via:
 
-- **T-SQL** (SSMS, VS Code MSSQL extension, Fabric portal query editor) -- primary method
-- **Notebooks** using `synapsesql` connector or direct OneLake write
+- **T-SQL** (SSMS, VS Code MSSQL extension, Fabric portal query editor)
+- **Notebooks** using `synapsesql` connector
 - **Pipelines** and **Dataflows Gen2**
 
 ### Via Notebook
 
 ```python
-# Direct OneLake write (most reliable from fab job run)
-db_path = "abfss://<ws-id>@onelake.dfs.fabric.microsoft.com/<db-id>/Tables/dbo/table_name"
-df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(db_path)
-
-# Or via synapsesql connector (requires Runtime 1.3+, com.microsoft.spark.fabric import)
 df.write.synapsesql("SQLDatabaseName.dbo.table_name", mode="overwrite")
 ```
 

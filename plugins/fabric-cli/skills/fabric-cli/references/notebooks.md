@@ -174,47 +174,28 @@ fab job run "ws.Workspace/MyNotebook.Notebook"
 | "failed without detail error" (~40s) | Code error or connector issue | Open notebook in Fabric portal to see Spark logs |
 | `NameError: spark` | No lakehouse attached | Add `default_lakehouse` to dependencies |
 
-### Writing to Lakehouse Tables
+### Writing to Warehouses and SQL Databases from Notebooks
 
-The standard pattern for writing to lakehouse tables uses `saveAsTable` with three-part naming:
-
-```python
-# Write to a lakehouse table (three-part: LakehouseName.schema.table)
-df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("LH_fit.gold_hevy.exercises")
-
-# Or write to the default (attached) lakehouse
-df.write.mode("overwrite").saveAsTable("my_table")
-```
-
-This is the native Spark Delta writer; no extra imports needed.
-
-### Writing to Warehouses from Notebooks
-
-Two approaches; the direct OneLake path is more reliable from `fab job run`:
-
-**Approach 1: Direct OneLake Delta write (recommended)**
-
-Write directly to the warehouse's OneLake path. No extra connector needed:
-
-```python
-# Get workspace and warehouse IDs from fab beforehand
-wh_path = "abfss://<ws-id>@onelake.dfs.fabric.microsoft.com/<wh-id>/Tables/dbo/table_name"
-df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(wh_path)
-```
-
-**Approach 2: synapsesql connector (Microsoft docs pattern)**
-
-Uses the Spark-to-Warehouse TDS connector. Requires Runtime 1.3+ and the Fabric Spark import:
+Notebooks can write to warehouses and SQL databases using the Spark synapsesql connector:
 
 ```python
 import com.microsoft.spark.fabric
 from com.microsoft.spark.fabric.Constants import Constants
 
+# Write DataFrame to a warehouse table
 df.write.synapsesql("WarehouseName.dbo.table_name", mode="overwrite")
+
+# Read from a warehouse table
 df = spark.read.synapsesql("WarehouseName.dbo.table_name")
+
+# Cross-database: read from lakehouse, write to warehouse
+df = spark.sql("SELECT * FROM LakehouseName.schema.table")
+df.write.synapsesql("WarehouseName.dbo.target_table", mode="overwrite")
 ```
 
-**Known issue**: `synapsesql` failures via `fab job run` show "failed without detail error" with no stack trace. Open the notebook in Fabric portal (`fab open`) to see the actual Spark exception. Common causes: runtime version, warehouse not in same workspace, or connector not finding the endpoint.
+The `com.microsoft.spark.fabric` import is required; without it `synapsesql` is not available on the DataFrame reader/writer. The warehouse must be in the same workspace as the notebook's attached lakehouse.
+
+**Known issue**: `fab job run` failures with `synapsesql` show "failed without detail error". Open the notebook in Fabric portal to see the actual Spark exception in cell output. Common causes: warehouse name mismatch, permissions, or the connector not finding the warehouse endpoint.
 
 ### Create and Configure Query Notebook
 

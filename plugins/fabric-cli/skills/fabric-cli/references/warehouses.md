@@ -53,32 +53,15 @@ For full DuckDB patterns, see [querying-data.md](./querying-data.md).
 
 Warehouses do not support `fab cp` to Files or `fab table load`. Data must be loaded via T-SQL (SSMS, notebooks) or pipelines.
 
-### Via Notebook: Direct OneLake Write (Recommended for Agents)
-
-Write directly to the warehouse's OneLake Delta path from a Spark notebook. No extra connector needed:
+### Via Notebook (Recommended for Agents)
 
 ```python
-# Write to warehouse via OneLake path (most reliable from fab job run)
-wh_path = "abfss://<ws-id>@onelake.dfs.fabric.microsoft.com/<wh-id>/Tables/dbo/table_name"
-df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(wh_path)
-```
-
-Get the IDs beforehand with `fab get`:
-
-```bash
-WS_ID=$(fab get "ws.Workspace" -q "id" | tr -d '"')
-WH_ID=$(fab get "ws.Workspace/MyWarehouse.Warehouse" -q "id" | tr -d '"')
-```
-
-### Via Notebook: synapsesql Connector (Alternative)
-
-The `synapsesql` connector uses TDS + COPY INTO. Requires Runtime 1.3+ and can be unreliable from `fab job run` (opaque "failed without detail error"):
-
-```python
-import com.microsoft.spark.fabric
-from com.microsoft.spark.fabric.Constants import Constants
-
+# Write a Spark DataFrame to warehouse
 df.write.synapsesql("WarehouseName.dbo.table_name", mode="overwrite")
+
+# CTAS from lakehouse (cross-database)
+df = spark.sql("SELECT * FROM LakehouseName.schema.source_table")
+df.write.synapsesql("WarehouseName.dbo.target_table", mode="overwrite")
 ```
 
 See [notebooks.md](./notebooks.md) for creating and running notebooks via `fab`.

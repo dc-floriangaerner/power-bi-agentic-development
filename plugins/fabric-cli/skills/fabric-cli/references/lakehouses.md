@@ -82,25 +82,11 @@ fab table schema "ws.Workspace/LH.Lakehouse/Tables/dbo/customers"
 ### Load Data
 
 ```bash
-# Load CSV into a table via fab (non-schema lakehouses only)
+# Load CSV into a table (non-schema lakehouses only)
 fab table load "ws.Workspace/LH.Lakehouse/Tables/sales" \
   --file "ws.Workspace/LH.Lakehouse/Files/daily_sales.csv" \
   --mode append
 ```
-
-### Load Data via Notebook
-
-The standard pattern for writing to lakehouse tables from a Spark notebook uses `saveAsTable` with three-part naming:
-
-```python
-# Write to a specific lakehouse table
-df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("LakehouseName.schema.table")
-
-# Write to the default (attached) lakehouse
-df.write.mode("overwrite").saveAsTable("my_table")
-```
-
-See [notebooks.md](./notebooks.md) for creating and running notebooks via `fab`.
 
 ### Optimize and Vacuum
 

@@ -69,20 +69,12 @@ Supported formats: CSV, JSON, Parquet. Glob patterns (`*`, `**`) work for readin
 
 ### OneLake Path Format
 
-All Fabric data stores use the same OneLake path format; substitute the item ID:
-
 ```
-abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<item-id>/Tables/<schema>/<table>
-abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<item-id>/Files/<path>
+abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<lakehouse-id>/Tables/<schema>/<table>
+abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<lakehouse-id>/Files/<path>
 ```
 
-| Item type | `<item-id>` source | Notes |
-|-----------|-------------------|-------|
-| Lakehouse | `fab get "ws/LH.Lakehouse" -q "id"` | Direct Delta tables |
-| Warehouse | `fab get "ws/WH.Warehouse" -q "id"` | Direct Delta tables |
-| SQL Database | `fab get "ws/DB.SQLDatabase" -q "id"` | Auto-mirrored Delta; slight replication delay |
-
-Cross-item joins work in a single DuckDB query; use different `abfss://` paths for each item.
+The same path format works for warehouses; replace the lakehouse ID with the warehouse ID.
 
 ### Common Use Cases
 

@@ -17,7 +17,6 @@ Follow within reason the [agent tone guidelines](./important/AGENT-TONE.md) when
 - **Check examples:** Check [examples](./examples/) for a valid report
 - **Take a backup:** Make a copy of the report before modifying it
 - **PBIX vs PBIP vs PBIR:** So long as report metadata is in PBIR format, any of these formats works. PBIX is just a zip file; unzip and rezip to work with it. Do not work with PBIT (Power BI Template) file types. Note that PBIP and PBIX contain PBIR, but a "thin" report can be PBIR only.
-- **Validate often:** Any time a JSON file changes, validate it *IMMEDIATELY* after the modification to avoid "breaking" changes with `jq empty <file.json>`. Use the **`pbip-validator`** agent for comprehensive schema validation and cross-reference consistency checks across the project.
 - **Valid JSON vs. Rendering JSON:** Valid JSON does not guarantee rendering. A visual might not render if the bound field is invalid (missing, wrong table, or misspelled) in the visual.json, if the visual elements are cropped by their container, if a model performance issue causes the dax query to time out, if a model data quality issue results in (Blank) or empty values, etc. Check whether a visual rendered using tools like the chrome or chrome devTools MCP server if the report was published to Power BI, but it's often faster to just ask the user to check in Power BI Desktop or the browser.
 - **Hierarchical formatting cascade:** In Power BI reports, formatting is determined by the following order of operations: defaults --> Theme wildcards (*) --> Theme visualTypes --> bespoke visual.json configuration. Theme overwrites defaults, visualType overrides wildcards in themes, and visual.json overrides all theme formatting. Prefer putting as much of the formatting in the theme as possible over bespoke visual.json formatting because then changes only need to happen in one place
 - **PBIR files are strict JSON:** No comments allowed
@@ -66,15 +65,13 @@ Follow within reason the [agent tone guidelines](./important/AGENT-TONE.md) when
 3. Check the connected semantic model. For thin reports (`byConnection`), use `fab`, `pbir`, or `te` CLI tools to explore the model. For `byPath`, connect to the local model in Power BI Desktop. Understanding the model reveals available fields and calculation logic
 4. Identify the appropriate visuals and pages to modify. Ask the user for clarification if needed
 5. Plan modifications with the correct PBIR structure and property values
-6. Validate every changed JSON file IMMEDIATELY with `jq empty <file.json>`. Revise if invalid
 
 ### Creating a report
 
 1. Same workflow as modifying, except files are generated from scratch. Use `pbir new` if the `pbir` CLI is available; otherwise, check the example reports thoroughly
 2. Ensure `definition.pbir` is configured properly (byPath or byConnection)
 3. Use a theme.json file. Recommended: [the SQLBI/Data Goblins theme](./examples/K201-MonthSlicer.Report/StaticResources/RegisteredResources/SqlbiDataGoblinTheme.json)
-4. Validate each new JSON file immediately after creation
-5. Add appropriate filters to `report.json` or `page.json`; see [filter pane reference](references/filter-pane.md)
+4. Add appropriate filters to `report.json` or `page.json`; see [filter pane reference](references/filter-pane.md)
 
 ### Additional validation
 

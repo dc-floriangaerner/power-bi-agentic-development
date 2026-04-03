@@ -6,8 +6,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.16.3-blue" alt="Version">
-  <img src="https://img.shields.io/badge/tabular_editor-2%20%7C%203-orange" alt="Tabular Editor">
+  <img src="https://img.shields.io/badge/version-0.17.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Power_BI-F2C811?logo=powerbi&logoColor=000" alt="Power BI">
+  <img src="https://img.shields.io/badge/Microsoft_Fabric-008272" alt="Microsoft Fabric">
+  <img src="https://img.shields.io/badge/Tabular_Editor-2E7D32" alt="Tabular Editor">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
 
@@ -134,6 +136,10 @@ copilot plugin install data-goblin/power-bi-agentic-development
 | [`r-reviewer`](plugins/reports/agents/r-reviewer.md) | reports | Review R visual scripts (ggplot2) for Power BI conventions |
 | [`python-reviewer`](plugins/reports/agents/python-reviewer.md) | reports | Review Python visual scripts (matplotlib/seaborn) for Power BI conventions |
 
+
+## Useful stuff
+
+General-purpose agent resources that don't fit into a plugin: defensive hooks, patterns, and tools. See [`useful-stuff/`](useful-stuff/).
 
 ## Use or re-use of these skills
 

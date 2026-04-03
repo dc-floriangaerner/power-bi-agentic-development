@@ -2,6 +2,42 @@
 
 Practical guidance for writing performant, maintainable M expressions in semantic model partitions.
 
+## Safe Pattern for Writing M
+
+When writing or generating M expressions for import partitions, follow this order to maximize query folding:
+
+```
+let
+    Source = Sql.Database(SqlEndpoint, Database),
+    Data = Source{[Schema="dbo", Item="MyTable"]}[Data],
+    -- 1. Filter rows (folds to WHERE)
+    Filtered = Table.SelectRows(Data, each [IsActive] = true),
+    -- 2. Select columns (folds to SELECT)
+    Selected = Table.SelectColumns(Filtered, {"Id", "Date", "Amount"}),
+    -- 3. Set types (folds to CAST)
+    Typed = Table.TransformColumnTypes(Selected, {{"Amount", Currency.Type}}),
+    -- 4. Sort if needed (folds to ORDER BY)
+    Sorted = Table.Sort(Typed, {{"Date", Order.Descending}}),
+    -- 5. Non-foldable transforms LAST
+    Added = Table.AddColumn(Sorted, "Category", each if [Amount] > 1000 then "High" else "Low")
+in
+    Added
+```
+
+If the transform logic is too complex for M, use `Value.NativeQuery` to pass native SQL directly:
+
+```
+let
+    Source = Sql.Database(SqlEndpoint, Database),
+    Data = Value.NativeQuery(Source,
+        "SELECT Id, Date, Amount FROM dbo.MyTable WHERE IsActive = 1",
+        null, [EnableFolding=true])
+in
+    Data
+```
+
+`EnableFolding=true` allows subsequent M steps to fold on top of the native query result.
+
 ## Query Folding
 
 Query folding translates M steps into native data source queries (SQL, OData, etc.). When folding works, the data source does the heavy lifting. When it breaks, the mashup engine pulls all data into memory and processes it locally.

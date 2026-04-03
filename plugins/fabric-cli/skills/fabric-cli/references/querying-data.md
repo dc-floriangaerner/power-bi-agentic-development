@@ -23,22 +23,20 @@ INSTALL azure;
 Delta tables in a lakehouse are stored at `Tables/<schema>/<table>`. Query them with `delta_scan()`:
 
 ```bash
-# 1. Get workspace and lakehouse IDs
-WS_ID=$(fab get "ws.Workspace" -q "id" | tr -d '"')
-LH_ID=$(fab get "ws.Workspace/LH.Lakehouse" -q "id" | tr -d '"')
-
-# 2. Query a delta table
+# Query a delta table using friendly names (recommended)
 duckdb -c "
 LOAD delta; LOAD azure;
 CREATE SECRET (TYPE azure, PROVIDER credential_chain, CHAIN 'cli');
 
 SELECT * FROM delta_scan(
-  'abfss://${WS_ID}@onelake.dfs.fabric.microsoft.com/${LH_ID}/Tables/schema/table_name'
+  'abfss://my-workspace@onelake.dfs.fabric.microsoft.com/MyLH.Lakehouse/Tables/schema/table_name'
 ) LIMIT 10;
 "
 ```
 
 The `CHAIN 'cli'` parameter tells the azure extension to use Azure CLI credentials; without it, DuckDB tries managed identity first (which fails on local machines).
+
+**Note:** The `.Lakehouse` suffix is required when using friendly names. For tables in the default `dbo` schema, GUID-based paths also work (see [OneLake Path Format](#onelake-path-format)).
 
 ### Querying Raw Files
 
@@ -69,18 +67,35 @@ Supported formats: CSV, JSON, Parquet. Glob patterns (`*`, `**`) work for readin
 
 ### OneLake Path Format
 
-All Fabric data stores use the same OneLake path format; substitute the item ID:
+OneLake supports two path formats: **friendly names** and **GUIDs**.
 
 ```
+# Friendly names (recommended for schema tables)
+abfss://<workspace-name>@onelake.dfs.fabric.microsoft.com/<item-name>.<ItemType>/Tables/<schema>/<table>
+
+# GUIDs
 abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<item-id>/Tables/<schema>/<table>
-abfss://<workspace-id>@onelake.dfs.fabric.microsoft.com/<item-id>/Files/<path>
 ```
 
-| Item type | `<item-id>` source | Notes |
-|-----------|-------------------|-------|
-| Lakehouse | `fab get "ws/LH.Lakehouse" -q "id"` | Direct Delta tables |
-| Warehouse | `fab get "ws/WH.Warehouse" -q "id"` | Direct Delta tables |
-| SQL Database | `fab get "ws/DB.SQLDatabase" -q "id"` | Auto-mirrored Delta; ~15s replication delay; extra `MSSQL_System_Uniquifier` column |
+**IMPORTANT: Use friendly names for schema-namespaced tables.** The GUID format fails with "Bad Request" when reading parquet files from schema subfolders (e.g., `Tables/bronze/orders`). Friendly names work reliably for all table paths including nested schemas.
+
+```bash
+# GUID format -- works for dbo tables, FAILS for schema tables
+WS_ID=$(fab get "ws.Workspace" -q "id" | tr -d '"')
+LH_ID=$(fab get "ws.Workspace/LH.Lakehouse" -q "id" | tr -d '"')
+delta_scan('abfss://${WS_ID}@onelake.dfs.fabric.microsoft.com/${LH_ID}/Tables/dbo/my_table')          # OK
+delta_scan('abfss://${WS_ID}@onelake.dfs.fabric.microsoft.com/${LH_ID}/Tables/bronze/my_table')       # FAILS
+
+# Friendly name format -- works for ALL tables including schemas
+delta_scan('abfss://my-workspace@onelake.dfs.fabric.microsoft.com/MyLH.Lakehouse/Tables/bronze/my_table')  # OK
+delta_scan('abfss://my-workspace@onelake.dfs.fabric.microsoft.com/MyLH.Lakehouse/Tables/dbo/my_table')     # OK
+```
+
+| Item type | Friendly name format | Notes |
+|-----------|---------------------|-------|
+| Lakehouse | `abfss://ws@onelake.../LH.Lakehouse/Tables/...` | Direct Delta tables |
+| Warehouse | `abfss://ws@onelake.../WH.Warehouse/Tables/...` | Direct Delta tables |
+| SQL Database | `abfss://ws@onelake.../DB.SQLDatabase/Tables/...` | Auto-mirrored Delta; ~15s replication delay; extra `MSSQL_System_Uniquifier` column |
 
 Cross-item joins work in a single DuckDB query; use different `abfss://` paths for each item.
 
@@ -150,7 +165,176 @@ ORDER BY tbl;
 
 - **Read-only**: DuckDB reads Delta tables but cannot write back (append-only writes exist but are not recommended for lakehouse tables)
 - **Auth**: Requires Azure CLI login or service principal; does not work with Fabric-only tokens
-- **IDs required**: Workspace and lakehouse GUIDs are needed for path construction; get them with `fab get ... -q "id"`
+- **Path format matters**: Use friendly names (not GUIDs) for tables in non-default schemas; see [OneLake Path Format](#onelake-path-format)
+
+## Execute PySpark/Python Directly Against a Lakehouse (No Notebook)
+
+Run arbitrary PySpark or Python code on Fabric Spark compute without creating a notebook. Useful for ephemeral ETL, one-off transforms, data validation, or agent-driven compute that doesn't need a persistent artifact. Full read/write access to lakehouse Delta tables via Spark SQL.
+
+### Using `nb exec -q` (Recommended)
+
+The `nb` CLI (`cargo install nb-fabric`) wraps the full session lifecycle: create, wait, submit, poll, print, and cleanup. Sessions are always cleaned up, even on errors.
+
+```bash
+# Python (default)
+nb exec -q "MyWorkspace/MyLH.Lakehouse" --code "print('hello')"
+
+# PySpark (includes Spark context for SQL and DataFrames)
+nb exec -q "MyWorkspace/MyLH.Lakehouse" --pyspark --code "spark.sql('SHOW TABLES').show()"
+
+# Pipe code via stdin
+echo "spark.sql('SELECT COUNT(*) FROM gold.orders').show()" | nb exec -q "WS/LH.Lakehouse" --pyspark --code -
+
+# Multi-line code
+nb exec -q "MyWorkspace/MyLH.Lakehouse" --pyspark --code "
+df = spark.sql('SELECT category, COUNT(*) as n FROM products GROUP BY category ORDER BY n DESC')
+df.show()
+df.write.mode('overwrite').saveAsTable('product_summary')
+print('Done')
+"
+```
+
+Output goes to stdout; status and metadata go to stderr:
+
+```
+---- exec: PySpark ----
+  Creating session...
+  Waiting for idle...  (session a1b2c3d4)
+  Session ready.
+  Submitting code...
+<your output here>
+  Session cleaned up.
+---- result ----
+  session  a1b2c3d4-...
+  runtime  PySpark
+  duration 25.3s
+  status   ok
+```
+
+Exit code is non-zero when the submitted code fails, so agents can check `$?`.
+
+### Using the API Directly
+
+For programmatic use without the `nb` CLI, call the Fabric REST API directly.
+
+#### Prerequisites
+
+- Azure CLI authenticated (`az login`)
+- A lakehouse in the target workspace
+
+#### How it works
+
+1. **Create a session** against a lakehouse (provisions Spark compute)
+2. **Submit code statements** one at a time; poll for results
+3. **Read output** from the statement response (`output.data["text/plain"]`)
+4. **Delete the session** when done
+
+**CRITICAL: Always delete sessions when done.** Idle sessions consume Fabric capacity units (CUs). A forgotten session burns compute until it times out (default: 20 minutes idle). In a loop or automation, wrap session cleanup in a `finally` block.
+
+#### Authentication
+
+The API requires a token from `az account get-access-token --resource https://api.fabric.microsoft.com`. Tokens from `fab auth` do **not** work for storage access; the Fabric Token Manager rejects them for OneLake operations.
+
+```python
+import subprocess, json
+
+result = subprocess.run(
+    ["az", "account", "get-access-token", "--resource", "https://api.fabric.microsoft.com"],
+    capture_output=True, text=True
+)
+token = json.loads(result.stdout)["accessToken"]
+```
+
+#### API Endpoints
+
+```
+Base: https://api.fabric.microsoft.com/v1/workspaces/{wsId}/lakehouses/{lhId}/livyapi/versions/2023-12-01
+
+POST   /sessions                      Create session (kind: "pyspark")
+GET    /sessions/{id}                 Check state (poll until "idle")
+POST   /sessions/{id}/statements      Submit code
+GET    /sessions/{id}/statements/{n}  Get result (poll until state: "available")
+DELETE /sessions/{id}                 Delete session (always do this)
+```
+
+#### Example: Query and Transform
+
+```python
+import json, time, urllib.request
+
+WS_ID = "<workspace-id>"
+LH_ID = "<lakehouse-id>"
+BASE = f"https://api.fabric.microsoft.com/v1/workspaces/{WS_ID}/lakehouses/{LH_ID}/livyapi/versions/2023-12-01"
+
+def api(path, method="GET", body=None):
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = json.dumps(body).encode() if body else None
+    req = urllib.request.Request(f"{BASE}{path}", data=data, method=method, headers=headers)
+    resp = urllib.request.urlopen(req)
+    raw = resp.read().decode()
+    return json.loads(raw) if raw else {}
+
+# 1. Create session
+session = api("/sessions", "POST", {"kind": "pyspark"})
+session_id = session["id"]
+
+try:
+    # 2. Wait for idle
+    while api(f"/sessions/{session_id}").get("state") != "idle":
+        time.sleep(5)
+
+    # 3. Submit code
+    code = '''
+    df = spark.sql("SELECT category, COUNT(*) as n, ROUND(AVG(price),2) as avg_price FROM products GROUP BY category")
+    df.show()
+    df.write.mode("overwrite").saveAsTable("product_summary")
+    print("Done")
+    '''
+    stmt = api(f"/sessions/{session_id}/statements", "POST", {"code": code, "kind": "pyspark"})
+
+    # 4. Poll for result
+    while True:
+        result = api(f"/sessions/{session_id}/statements/{stmt['id']}")
+        if result.get("state") == "available":
+            output = result["output"]
+            if output["status"] == "ok":
+                print(output["data"]["text/plain"])
+            else:
+                print(f"Error: {output['evalue']}")
+            break
+        time.sleep(5)
+
+finally:
+    # 5. ALWAYS clean up
+    api(f"/sessions/{session_id}", "DELETE")
+```
+
+### What works
+
+- `spark.sql("SELECT ...")` -- full Spark SQL against lakehouse tables
+- `spark.sql("SHOW TABLES")` -- metastore access
+- `df.write.saveAsTable(...)` -- write Delta tables back to the lakehouse
+- JDBC reads from external SQL Server, PostgreSQL, etc.
+- Pure Python (pandas, numpy, pyarrow, etc.)
+- In-memory Spark DataFrames
+
+### Limitations
+
+- `deltalake` (delta-rs) is not pre-installed in the PySpark runtime; use Spark SQL instead
+- `notebookutils` APIs have limited functionality (no FUSE mount, no `/lakehouse/default/`)
+- Session startup takes 30-90 seconds (cold start); subsequent statements are fast
+- Tokens expire after ~60 minutes; long-running sessions need token refresh
+
+### When to use each approach
+
+| Scenario | Use |
+|----------|-----|
+| Quick read-only exploration | DuckDB (fastest; no Spark overhead) |
+| Write data back to lakehouse | `nb exec -q --pyspark` or notebook |
+| Ephemeral transform; no persistent artifact | `nb exec -q` |
+| Complex multi-cell workflow with debugging | Notebook (`nb exec` or portal) |
+| Scheduled ETL | Notebook via `fab job run` |
+| Agent-driven compute (Dagster, orchestrators) | `nb exec -q` or API directly |
 
 ## Query a Semantic Model (DAX)
 

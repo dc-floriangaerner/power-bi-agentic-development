@@ -1,6 +1,6 @@
 ---
 name: connect-pbid
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used when the user asks to "connect to Power BI Desktop", "query PBI Desktop with DAX", "modify PBI Desktop model", "find the Analysis Services port", "use TOM with Power BI Desktop", "add a measure to PBI", "create a relationship", "find the file path of my Power BI file", "capture visual queries", "intercept DAX queries", "add a DAX UDF", "create a field parameter", "add annotations", "set table groups", "create a calendar", "add calendar column groups", "validate DAX", "disable auto date/time", or mentions connecting to the local Analysis Services instance. Provides TOM and ADOMD.NET guidance via PowerShell for model enumeration, DAX queries, metadata modification, annotations, calendar definitions, field parameters, and query tracing.
 ---
 

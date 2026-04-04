@@ -1,6 +1,6 @@
 ---
 name: tmdl
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used as a last resort when the Tabular Editor CLI, Power BI MCP server, or connect-pbid skill are not available. Use when the user asks to "edit TMDL", "add a measure in TMDL", "add a column description", "fix summarizeBy", "TMDL syntax", "write a measure in TMDL", "create a calculated column in TMDL", "fix formatString", "TMDL indentation", "convert BIM to TMDL", "convert model.bim to TMDL", "BIM to TMDL", "TMDL to BIM", "migrate from BIM to TMDL", or mentions TMDL file editing, BIM-to-TMDL conversion, or direct semantic model file authoring in PBIP projects.
 ---
 

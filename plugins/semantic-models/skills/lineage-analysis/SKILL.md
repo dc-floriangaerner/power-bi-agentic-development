@@ -1,6 +1,6 @@
 ---
 name: lineage-analysis
-version: 0.17.0
+version: 0.17.1
 description: "This skill should be used when the user asks to 'find downstream reports', 'what reports use this model', 'show report lineage', 'which reports are connected', 'find connected reports', 'get model dependencies', 'cross-workspace lineage', 'impact analysis', 'what depends on this dataset', or needs to trace the relationship between semantic models and their downstream reports across workspaces."
 ---
 

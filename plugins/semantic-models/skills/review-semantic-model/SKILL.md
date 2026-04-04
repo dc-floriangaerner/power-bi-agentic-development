@@ -1,6 +1,6 @@
 ---
 name: review-semantic-model
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used when the user asks to "review a semantic model", "audit a semantic model", "check model quality", "optimize my model", "validate model design", "run a best practice check", "check AI readiness", "prepare model for Copilot", or mentions reviewing, auditing, or validating a Power BI semantic model against quality, performance, or best practice standards.
 ---
 

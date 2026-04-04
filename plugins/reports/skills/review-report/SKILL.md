@@ -1,6 +1,6 @@
 ---
 name: review-report
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used when the user asks to "review a report", "evaluate report quality", "audit a report", "check if a report is being used", "report usage analysis", "report health check", "assess report performance", "find unused reports", "report page views", or needs to provide actionable feedback on the quality, usage, and effectiveness of a Power BI report.
 ---
 

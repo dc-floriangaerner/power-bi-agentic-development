@@ -1,6 +1,6 @@
 ---
 name: pbi-report-design
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used when the user asks about "report layout", "report design best practices", "visual hierarchy", "3-30-300 rule", "KPI card design", "table formatting", "matrix formatting", "page layout", "report colors", "accessibility in reports", "page titles", "visual spacing", "report canvas", "card design patterns", or needs guidance on Power BI report design principles, layout, and formatting best practices.
 ---
 

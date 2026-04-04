@@ -1,6 +1,6 @@
 ---
 name: power-query
-version: 0.17.0
+version: 0.17.1
 description: This skill should be used when the user asks to "write Power Query", "edit a partition expression", "fix Power Query", "validate M code", "test a partition", "preview partition data", "debug Power Query step", "check query folding", "optimize Power Query", "rewrite M expression", or needs to author, validate, or test Power Query M expressions in semantic model partitions.
 ---
 

@@ -21,7 +21,7 @@
 ---
 
 <p align="center">
-  <img src="media/bg22-06-2.png" alt="" width="800">
+  <img src="media/bg42-11-3.png" alt="" width="800">
 </p>
 
 ## Installation
@@ -71,7 +71,8 @@ copilot plugin install data-goblin/power-bi-agentic-development
 
 ## Overview
 
-### Skills
+<details>
+<summary><strong>Skills</strong> (20)</summary>
 
 | Skill | Plugin | Description |
 |-------|--------|-------------|
@@ -97,7 +98,10 @@ copilot plugin install data-goblin/power-bi-agentic-development
 | [`lineage-analysis`](plugins/semantic-models/skills/lineage-analysis/) | semantic-models | Trace downstream reports from a semantic model across workspaces |
 | [`fabric-cli`](plugins/fabric-cli/skills/fabric-cli/) | fabric-cli | Fabric CLI (fab) for any remote operation in Power BI or Fabric (Fabric not required; works fully on Pro, PPU) |
 
-### Commands
+</details>
+
+<details>
+<summary><strong>Commands</strong> (3)</summary>
 
 > In Claude Code, slash commands and skills have coalesced. Commands are simply more prescriptive workflows, but they take the same structure as a skill.
 > Skills are not workflows nor should they be prescriptive.
@@ -108,7 +112,10 @@ copilot plugin install data-goblin/power-bi-agentic-development
 | [`/audit-context`](plugins/fabric-cli/commands/audit-context.md) | fabric-cli | Review project context files (CLAUDE.md, agents.md, memory files) |
 | [`/migrating-fabric-trial-capacities`](plugins/fabric-cli/commands/migrating-fabric-trial-capacities.md) | fabric-cli | Migrate workspaces from trial to production capacity |
 
-### Hooks
+</details>
+
+<details>
+<summary><strong>Hooks</strong> (3)</summary>
 
 > Hooks run automatically to validate files after edits.
 
@@ -121,7 +128,10 @@ copilot plugin install data-goblin/power-bi-agentic-development
 > [!NOTE]
 > Hook checks can be individually toggled via `plugins/pbip/hooks/config.yaml`. All checks are enabled by default. Set any check to `false` to disable it; for example, set `fab_exists: false` if you don't have the Fabric CLI installed.
 
-### Agents
+</details>
+
+<details>
+<summary><strong>Agents</strong> (8)</summary>
 
 > Subagents for reviewing or providing feedback on agent (or less frequently human) work
 
@@ -135,6 +145,8 @@ copilot plugin install data-goblin/power-bi-agentic-development
 | [`svg-reviewer`](plugins/reports/agents/svg-reviewer.md) | reports | Review SVG DAX measures for syntax and design quality |
 | [`r-reviewer`](plugins/reports/agents/r-reviewer.md) | reports | Review R visual scripts (ggplot2) for Power BI conventions |
 | [`python-reviewer`](plugins/reports/agents/python-reviewer.md) | reports | Review Python visual scripts (matplotlib/seaborn) for Power BI conventions |
+
+</details>
 
 
 ## Useful stuff
@@ -151,6 +163,10 @@ You do not have the license to copy and incorporate them into your own products,
 <br>
 
 ---
+
+<p align="center">
+  <img src="media/bg22-06-2.png" alt="" width="800">
+</p>
 
 <p align="center">
   <em>Built with assistance from <a href="https://claude.ai/claude-code">Claude Code</a>. AI-generated code has been reviewed but may contain errors. Use at your own risk.</em>

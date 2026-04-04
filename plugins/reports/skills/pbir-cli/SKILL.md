@@ -13,16 +13,23 @@ Format: `ReportName.Report/PageName.Page/VisualName.Visual`
 
 - Type suffixes (`.Report`, `.Page`, `.Visual`) are required
 - Quote paths with spaces: `"My Report.Report/Dashboard.Page"`
-- Glob patterns for bulk: `"Report.Report/**/*.Visual"` -- paths resolve relative to the directory containing the `.Report` folder, **not** an arbitrary cwd. If the report is inside a subdirectory (e.g., `tmp/`), `cd` into that directory first, then use the pattern without the prefix: `cd tmp && pbir set "Report.Report/**/*.Visual.title.show" --value true -f`
+- Glob patterns for bulk: `"Report.Report/**/*.Visual"`
 - Glob patterns require `--force/-f` for both `set` and `rm` commands
 - Properties via dot: `"Report.Report/Page.Page/Visual.Visual.title.fontSize"`
 - Filters/bookmarks: `"Report.Report/filter:Name"`, `"Report.Report/bookmark:Name"`
 - If multiple reports match, disambiguate with parent folder prefix
 - Workspace destinations use `.Workspace` suffix: `"My Workspace.Workspace/Report.Report"`
 
+## Related Skills
+
+- **`pbir-format`** -- load this skill to understand PBIR JSON file structure (visual.json, page.json, expressions, theme inheritance). Required before reading or debugging raw report files.
+- **`pbip-format`** -- load for PBIP project structure (definition.pbir, .platform, folder layout) and format conversion (PBIP/PBIX/PBIR).
+- **`create-pbi-report`** -- step-by-step guided workflow for creating reports from scratch.
+- **`pbi-report-design`** -- design best practices, layout guidelines, and visual hierarchy principles.
+
 ## Critical Rules
 
-1. **NEVER edit report JSON files directly.** Always use the CLI (`pbir visuals bind`, `pbir set`, etc.). The CLI handles field type resolution, schema validation, and structural integrity that raw JSON manipulation bypasses. Editing JSON directly is the #1 source of broken reports.
+1. **NEVER edit report JSON files directly.** Always use the CLI (`pbir visuals bind`, `pbir set`, etc.). The CLI handles field type resolution, schema validation, and structural integrity that raw JSON manipulation bypasses. If raw PBIR JSON must be read for debugging, load the **`pbir-format`** skill first to understand the structure. Editing JSON directly is the #1 source of broken reports.
 
 2. **Column vs Measure matters.** Measures bound as Columns (or vice versa) produce "something is wrong with one or more fields" errors in Power BI Desktop that pass schema validation but fail at runtime. The CLI (`pbir visuals bind`) and object model (`visual.bind_field()`) auto-detect extension measures from `reportExtensions.json` and model measures from the semantic model. When auto-detection isn't possible (no model connection, no extension match), the default is Column. Override explicitly with `-t Measure` in the CLI or `field_type="Measure"` in `bind_field()`.
 
@@ -31,6 +38,12 @@ Format: `ReportName.Report/PageName.Page/VisualName.Visual`
    pbir visuals bind "Visual.Visual" -c "Values"
    pbir visuals bind "Visual.Visual" -a "Values:Table.MeasureName" -t Measure
    ```
+
+4. **Validate after every mutation.** Run `pbir validate "Report.Report"` after changes. Use `--qa` for overlap/overflow checks, `--fields` for model field verification, `--all` for everything.
+
+5. **Theme-first formatting.** Check `pbir visuals format` before applying bespoke formatting -- the theme may already set the property. Prefer `pbir theme set-formatting` for changes that apply to all visuals of a type. Reserve `pbir visuals title/background/border` for one-off overrides.
+
+6. **Discover before setting.** Run `pbir schema containers <type>` then `pbir schema describe <type>.<container>` to find correct property names, types, ranges, and enums before formatting. Do not guess property names.
 
 ## Core Workflows
 
@@ -327,7 +340,7 @@ pbir add title/subtitle "path":
 
 pbir visuals bind "path":
   use: add, remove, or inspect field bindings
-  flags: -a "Role:Table.Field", -r "Role:Table.Field", -c Role, -t Measure/Column, --show, --list-roles
+  flags: -a "Role:Table.Field", -r "Role:Table.Field", -c Role, -t Measure/Column, --show, --list-roles, --no-validate
 
 pbir visuals sort "path":
   use: set sort order on a visual

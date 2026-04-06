@@ -57,11 +57,11 @@ Left margin:   24.  Right edge: 24+1232=1256.  Right margin: 1280-1256 = 24  [ok
 
 ## KPI Targets
 
-Use prior-year measures as targets when available. If none exist, add them via `te`:
+Use prior-year measures as targets when available. If none exist, add the measure to the semantic model via Tabular Editor or by editing the TMDL files directly:
 
-```bash
-te add "Table/Measure 1YP.Measure" \
-  -i "CALCULATE([Measure], DATEADD('Date'[Date], -1, YEAR))" --save
+```
+# In the relevant table's .tmdl file, add:
+measure 'Measure 1YP' = CALCULATE([Measure], DATEADD('Date'[Date], -1, YEAR))
 ```
 
 If no clear target exists, ask the user via `AskUserQuestion`.

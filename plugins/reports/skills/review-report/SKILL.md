@@ -81,7 +81,7 @@ Evaluate the visual design and information architecture. Consult the `pbi-report
 - [ ] Detail gradient followed (KPIs top-left, detail bottom-right)
 - [ ] Color usage intentional and accessible (no gratuitous color, no red/green for colorblind users)
 - [ ] Font family, size, and formatting consistent throughout
-- [ ] Visual count reasonable (avoid >8 visuals per page)
+- [ ] Visual count reasonable (loosely 12-15 max per page, depends on complexity)
 - [ ] No empty visuals (all visuals have field bindings)
 - [ ] Theme applied (not default Power BI theme)
 - [ ] Chart axes begin at zero (unless intentional)

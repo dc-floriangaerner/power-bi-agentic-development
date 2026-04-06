@@ -234,23 +234,31 @@ Quick reference for the most common failures. For the full troubleshooting guide
 | Symptom                        | Likely Cause                                    | Resolution                                         |
 |--------------------------------|-------------------------------------------------|----------------------------------------------------|
 | Failed with credential error   | Credentials expired, missing, or didn't carry over after copy | Update in dataset settings; only shared cloud connections transfer with `fab cp` |
-| Type mismatch on a table       | Source column types don't match model column types | Check `te get "Table/Column" -q dataType` vs source schema; add `Table.TransformColumnTypes` in partition expression |
+| Type mismatch on a table       | Source column types don't match model column types | Check column data types in the model definition vs source schema; add `Table.TransformColumnTypes` in partition expression |
 | Column does not exist          | Source column renamed, removed, or differently cased | Check source schema; add `Table.RenameColumns` in partition expression |
 | Timeout (2h shared / 5h Premium) | Model too large for a single refresh window | Implement incremental refresh; use partition-level refresh via XMLA; reduce model size |
-| Calculated tables empty        | `dataOnly` refresh clears but doesn't rebuild | Follow with `te refresh --type calculate` to rebuild calculated tables and calc groups |
+| Calculated tables empty        | `dataOnly` refresh clears but doesn't rebuild | Follow with a `calculate` refresh via the Enhanced Refresh API to rebuild calculated tables and calc groups |
 | Throttled on Premium           | Too many concurrent refreshes                   | Stagger refresh schedules; refresh during off-peak |
 
 ### Debugging per-table failures
 
-When a full refresh fails, isolate the failing table:
+When a full refresh fails, isolate the failing table by refreshing individual tables via the Enhanced Refresh API:
 
 ```bash
-te refresh --table Customers --type full    # Dimensions first
-te refresh --table Invoices --type full     # Then facts
-te refresh --type calculate                 # Then calculated tables
+# Refresh dimensions first
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"full","objects":[{"table":"Customers"}]}'
+
+# Then facts
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"full","objects":[{"table":"Invoices"}]}'
+
+# Then recalculate
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"calculate"}'
 ```
 
-Check the failing table's partition expression and compare source schema against the model's expected column names and types with `te get` and `fab table schema`.
+Check the failing table's partition expression and compare source schema against the model's expected column names and types via `fab export` or `fab table schema`.
 
 ## Large Model Strategies
 

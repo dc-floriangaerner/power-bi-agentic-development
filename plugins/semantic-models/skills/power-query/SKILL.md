@@ -54,13 +54,16 @@ Query folding is the most important performance concept. The M engine translates
 - `Table.Sort` -> `ORDER BY`
 - `Table.FirstN` -> `TOP`
 - `Table.Group` -> `GROUP BY`
-- `Table.TransformColumnTypes` -> `CAST`
 - `Table.RenameColumns` -> `AS` aliases
+
+**Steps that may or may not fold** (source-dependent):
+- `Table.TransformColumnTypes` -- frequently breaks folding for text-to-numeric/date conversions on SQL Server sources. Use `Table.TransformColumns` with explicit conversion functions (e.g., `Number.From`) as a more reliable foldable alternative.
 
 **Steps that break folding:**
 - `Table.AddColumn` with custom M functions (not translatable to SQL)
-- `Table.Buffer` (forces materialization)
-- `Table.Combine` across different data sources
+- `Table.Buffer` (forces materialization; prefer `Table.StopFolding` to stop folding without the memory overhead)
+- `Table.LastN` (no SQL equivalent without subquery)
+- `Table.Combine` across different data sources (cross-database folding within the same SQL Server is possible via `EnableCrossDatabaseFolding`)
 - Complex `each` expressions with M-specific logic
 - Any step after a fold-breaking step
 
@@ -74,7 +77,7 @@ Remove unused columns and filter rows as early as possible:
 let
     Source = Sql.Database(SqlEndpoint, Database),
     Data = Source{[Schema="dbo", Item="Orders"]}[Data],
-    -- Filter and select BEFORE any custom transforms
+    // Filter and select BEFORE any custom transforms
     #"Filtered" = Table.SelectRows(Data, each [Status] <> "Cancelled"),
     #"Selected" = Table.SelectColumns(#"Filtered", {"OrderId", "Date", "Amount", "CustomerId"})
 in
@@ -137,11 +140,9 @@ Write the expression back to the model; Analysis Services validates the M syntax
 - Type mismatches in `TransformColumnTypes`
 
 ```bash
-# Using te CLI (if available)
-te set <Table> -q expression -v "<new M expression>" \
-  -s "<Workspace>" -d "<Model>"
-
-# Or edit the TMDL partition source directly and deploy
+# Edit the TMDL partition source directly and deploy via fab import,
+# or use the XMLA endpoint with Tabular Editor or SSMS to modify
+# the partition expression on the deployed model.
 ```
 
 AS returns an error if the expression is malformed. This is faster than a full execute but doesn't catch runtime errors (wrong column names, data source issues).

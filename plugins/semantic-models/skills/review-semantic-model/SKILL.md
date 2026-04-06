@@ -50,9 +50,8 @@ Evaluate findings across categories, ordered by severity:
 
 **Memory and Size**
 - High-cardinality columns with large dictionaries (GUIDs, transaction IDs, composite keys)
-- Not disabling IsAvailableInMdx if the model is not used by Analyze in Excel
+- IsAvailableInMdx enabled on hidden or high-cardinality columns (wastes memory on attribute hierarchies unused by DAX; disable for columns not consumed via Analyze in Excel / MDX)
 - Unsplit DateTime columns (near-unique precision creating massive dictionaries)
-- Attribute hierarchies (IsAvailableInMDX) enabled on hidden or high-cardinality columns
 - Auto Date/Time tables (hidden LocalDateTable_* bloating memory)
 - Inappropriate data types (Double for currency, String for numeric)
 - Calculated columns that could be measures
@@ -65,9 +64,10 @@ Evaluate findings across categories, ordered by severity:
 - Columns better handled upstream (i.e. calculations not done in calc columns or PQ)
 
 **DAX Anti-Patterns**
-- Filtering tables instead of columns
-- Division without DIVIDE() or error handling
-- Inefficient iterators (SUMX/AVERAGEX over large tables without filters)
+- Filtering tables instead of columns in CALCULATE (causes both correctness and performance issues)
+- Unhandled division by zero (use DIVIDE() or explicit zero-check; note: plain `/` is fine when the denominator is guaranteed non-zero and can be faster)
+- Iterators with callbacks or nested iterators over large tables (use aggregators like SUM/AVERAGE when possible; iterators over large tables are fine if the expression is Storage Engine-pushable)
+- Missing KEEPFILTERS around non-equality filter predicates in CALCULATE
 
 **Measure Hygiene**
 - Implicit measures used where explicit measures should exist
@@ -95,11 +95,11 @@ Evaluate findings across categories, ordered by severity:
 - Missing or inadequate descriptions for AI consumption
 - Complex patterns (disconnected tables, many-to-many, inactive relationships) are valid model design but AI may struggle with them
 
-### Step 4: Performance Analysis
+### Step 3: Performance Analysis
 
 For performance-specific analysis, see `references/performance.md`.
 
-### Step 5: Report Findings
+### Step 4: Report Findings
 
 Produce a structured markdown report with:
 

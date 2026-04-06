@@ -110,7 +110,7 @@ pbir theme set-formatting "Sales.Report" "lineChart.*.title.fontSize" --value 14
 
 Fill the canvas with a purposeful visual hierarchy. Aim for a complete analytical page, not a sparse layout. The standard composition for a 1280x720 page:
 
-**Row 1 (y: 20-160): KPI visuals** -- 2-3 `kpi` visuals (preferred over `card`) showing headline metrics with targets and trend lines. Use prior-year measures as targets when available; if none exist, add them to the semantic model via `te add "Table/Measure 1YP.Measure" -i "CALCULATE([Measure], DATEADD('Date'[Date], -1, YEAR))" --save`. If no clear target exists, ask the user. Space KPIs evenly across the top with equal gaps.
+**Row 1 (y: 20-160): KPI visuals** -- 2-3 `kpi` visuals (preferred over `card`) showing headline metrics with targets and trend lines. Use prior-year measures as targets when available; if none exist, add them to the semantic model via Tabular Editor or TMDL editing. If no clear target exists, ask the user. Space KPIs evenly across the top with equal gaps.
 
 **Row 2 (y: 180-460): Trend + Breakdown** -- A line/area chart showing metric evolution over time on the left (~60% width), and a bar/column chart showing breakdown by a key category on the right (~40% width). The time granularity for the trend should be inferred from the active filter context: if filtering by year, show monthly; if filtering by month, show daily or weekly; if no date filter, show monthly or quarterly.
 

@@ -91,11 +91,24 @@ Look at `status` and `serviceExceptionJson` for the specific error message and w
 Refresh tables one at a time to find which one fails:
 
 ```bash
-te connect "MyWorkspace" "MyModel"
-te refresh --table Customers --type full    # Dimensions first
-te refresh --table Products --type full
-te refresh --table Invoices --type full     # Then facts
-te refresh --type calculate                 # Then calculated tables
+# Refresh individual tables via the Power BI REST API
+WS_ID=$(fab get "MyWorkspace.Workspace" -q "id" | tr -d '"')
+MODEL_ID=$(fab get "MyWorkspace.Workspace/MyModel.SemanticModel" -q "id" | tr -d '"')
+
+# Dimensions first
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"Full","objects":[{"table":"Customers"}]}'
+
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"Full","objects":[{"table":"Products"}]}'
+
+# Then facts
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"Full","objects":[{"table":"Invoices"}]}'
+
+# Then calculated tables
+fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" \
+  -X post -i '{"type":"Calculate"}'
 ```
 
 ### 3. Compare source schema to model schema
@@ -106,9 +119,9 @@ Check what the source provides vs what the model expects:
 # Source schema (lakehouse example)
 fab table schema "MyWorkspace.Workspace/MyLakehouse.Lakehouse/Tables/invoices"
 
-# Model column types
-te get "Invoices/Billing Date" -q dataType
-te get "Invoices/Customer Key" -q dataType
+# Model column types -- inspect the TMDL definition or use fab export
+fab export "MyWorkspace.Workspace/MyModel.SemanticModel" -o ./model-export -f
+cat ./model-export/MyModel.SemanticModel/definition/tables/Invoices.tmdl | grep -A1 "column "
 ```
 
 If they don't match, add type conversion steps in the partition expression.

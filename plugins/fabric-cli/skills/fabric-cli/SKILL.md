@@ -197,7 +197,7 @@ Examples:
 - `.SQLDatabase` - SQL databases
 - `.UserDataFunction` - User data functions
 
-Full list: 49 types. Use `fab desc .<ItemType>` to check supported commands, or `fab desc all` for all types.
+Full list: 49+ types. Use `fab desc .<ItemType>` to check supported commands for a specific type, or `fab desc` (no argument) to see all available element types.
 
 ## Essential Commands
 

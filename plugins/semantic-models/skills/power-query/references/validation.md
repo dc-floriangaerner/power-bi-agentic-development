@@ -101,12 +101,15 @@ else:
 
 Analysis Services validates M syntax when a partition expression is saved. This is faster than executing but only catches structural errors; it won't detect wrong column names or data source issues.
 
-### Using `te` CLI
+### Using TMDL editing or Tabular Editor
+
+Edit the partition expression in the TMDL file directly, or use Tabular Editor to modify and deploy:
 
 ```bash
-# Set partition expression (AS validates on save)
-te set Orders -q expression -v "let Source = ... in Result" \
-  -s "<Workspace>" -d "<Model>"
+# Edit the partition expression in the TMDL file
+# Open: <Model>.SemanticModel/definition/tables/Orders.tmdl
+# Modify the partition expression under the "partition" block, then deploy:
+fab import "<Workspace>.Workspace/<Model>.SemanticModel" -i ./<Model>.SemanticModel -f
 ```
 
 If the expression has syntax errors, AS returns an error like:

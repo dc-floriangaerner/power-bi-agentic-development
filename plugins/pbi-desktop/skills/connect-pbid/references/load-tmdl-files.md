@@ -2,66 +2,60 @@
 
 Load a local semantic model definition (TMDL folder or BIM file) into TOM for programmatic inspection and modification; no running Analysis Services instance required.
 
-## Via te CLI (recommended; cross-platform)
+## Via Tabular Editor CLI (cross-platform)
 
-The `te` CLI loads TMDL and BIM natively on macOS, Linux, and Windows. It wraps TOM internally and provides a complete model CRUD surface.
+Tabular Editor (TE2 or TE3) can load TMDL and BIM natively. Use the CLI (`TabularEditor.exe` on Windows, or the TE3 cross-platform binary) for scripted model inspection and modification.
 
 ### Load and inspect
 
 ```bash
-# Load TMDL folder
-te load -m ./MyModel.SemanticModel/definition
+# Open a TMDL folder in Tabular Editor (GUI)
+TabularEditor.exe ./MyModel.SemanticModel/definition
 
-# Load BIM file
-te load -m ./model.bim
+# Open a BIM file in Tabular Editor (GUI)
+TabularEditor.exe ./model.bim
+```
 
-# List tables and measures
-te ls -m ./MyModel.SemanticModel/definition
+To inspect model objects programmatically, read the TMDL files directly:
 
-# List columns in a specific table
-te ls -m ./MyModel.SemanticModel/definition Sales
+```bash
+# List tables
+ls ./MyModel.SemanticModel/definition/tables/*.tmdl
 
-# Read a measure expression
-te cat "Sales/Total Revenue" -m ./MyModel.SemanticModel/definition
+# Read a specific table definition (columns, measures, partitions)
+cat ./MyModel.SemanticModel/definition/tables/Sales.tmdl
 
-# Get object properties as JSON
-te get "Sales/Total Revenue" -m ./MyModel.SemanticModel/definition
+# Find a measure expression
+grep -A5 "measure 'Total Revenue'" ./MyModel.SemanticModel/definition/tables/Sales.tmdl
 ```
 
 ### Modify and save
 
+Edit TMDL files directly, or use Tabular Editor:
+
 ```bash
-# Add a measure
-te add "Sales/YTD Revenue.measure" -m ./definition -i "TOTALYTD([Total Revenue], 'Date'[Date])" --save
+# Open in Tabular Editor, make changes, and save
+TabularEditor.exe ./MyModel.SemanticModel/definition
 
-# Rename an object
-te mv "Sales/Old Name" "Sales/New Name" -m ./definition --save
+# Or edit TMDL files directly; e.g. add a measure to Sales.tmdl:
+#   measure 'YTD Revenue' = TOTALYTD([Total Revenue], 'Date'[Date])
 
-# Set a property
-te set "Sales/Total Revenue" -m ./definition -q description -i "Sum of revenue across all channels" --save
-
-# Remove an object
-te rm "Sales/Deprecated Measure" -m ./definition --save
-
-# Save to a different location or format
-te save -m ./definition -o ./export --format bim
-te save -m ./model.bim -o ./tmdl-out --format tmdl
+# Convert between formats using Tabular Editor CLI (TE2)
+TabularEditor.exe ./model.bim -S ./tmdl-out -F TMDL
+TabularEditor.exe ./definition -S ./output/model.bim
 ```
 
 ### Deploy to Fabric
 
 ```bash
-# Deploy local TMDL to a remote workspace
-te deploy -m ./definition -s "My Workspace" -d "My Model" --auth interactive
+# Deploy local TMDL to a remote workspace via fab CLI
+fab import "My Workspace.Workspace/My Model.SemanticModel" -i ./MyModel.SemanticModel -f
 ```
 
 ### Connect to remote model and save locally
 
 ```bash
-# Pull a remote model to local TMDL
-te save -s "My Workspace" -d "My Model" -o ./local-copy --format tmdl --auth interactive
-
-# Or export via fab CLI
+# Export via fab CLI
 fab export "My Workspace.Workspace/My Model.SemanticModel" -o ./local-copy -f
 ```
 
@@ -153,8 +147,8 @@ After modifying the in-memory model, deploy to a remote workspace:
 [Microsoft.AnalysisServices.Tabular.TmdlSerializer]::SerializeDatabaseToFolder($db, $tmdlPath)
 fab import "WorkspaceName.Workspace/ModelName.SemanticModel" -i $tmdlPath -f
 
-# Option 2: deploy via te CLI
-te deploy -m $tmdlPath -s "WorkspaceName" -d "ModelName" --auth interactive
+# Option 2: deploy via fab CLI
+fab import "WorkspaceName.Workspace/ModelName.SemanticModel" -i $tmdlPath -f
 ```
 
 ## Key Differences: Live Connection vs Local Files
@@ -167,7 +161,7 @@ te deploy -m $tmdlPath -s "WorkspaceName" -d "ModelName" --auth interactive
 | **DAX queries** | Yes (via ADOMD.NET) | No (no engine running) |
 | **DMV queries** | Yes | No |
 | **Undo** | `UndoLocalChanges()` discards unsaved | Revert files via git |
-| **Deploy** | Already live | Needs `fab import` or `te deploy` |
+| **Deploy** | Already live | Needs `fab import` |
 
 ## Common Patterns
 
@@ -177,9 +171,9 @@ te deploy -m $tmdlPath -s "WorkspaceName" -d "ModelName" --auth interactive
 # Pull from Fabric
 fab export "Prod.Workspace/Sales.SemanticModel" -o ./working -f
 
-# Modify locally
-te add "Sales/New KPI.measure" -m ./working/Sales.SemanticModel/definition \
-  -i "DIVIDE([Revenue], [Target])" --save
+# Modify locally (edit TMDL files directly or open in Tabular Editor)
+# e.g. add to ./working/Sales.SemanticModel/definition/tables/Sales.tmdl:
+#   measure 'New KPI' = DIVIDE([Revenue], [Target])
 
 # Push back
 fab import "Prod.Workspace/Sales.SemanticModel" -i ./working/Sales.SemanticModel -f
@@ -188,12 +182,9 @@ fab import "Prod.Workspace/Sales.SemanticModel" -i ./working/Sales.SemanticModel
 ### Convert between formats
 
 ```bash
-# BIM to TMDL
-te save -m ./model.bim -o ./tmdl-output --format tmdl
+# BIM to TMDL (using Tabular Editor CLI)
+TabularEditor.exe ./model.bim -S ./tmdl-output -F TMDL
 
-# TMDL to BIM
-te save -m ./definition -o ./output --format bim
-
-# TMDL to PBIP (full project with report stub)
-te save -m ./definition -o ./project --format pbip
+# TMDL to BIM (using Tabular Editor CLI)
+TabularEditor.exe ./definition -S ./output/model.bim
 ```

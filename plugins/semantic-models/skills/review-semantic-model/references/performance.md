@@ -1,6 +1,6 @@
 # Semantic Model Performance
 
-Methodology and guidance for evaluating semantic model performance: memory analysis, query optimization, unused column detection, and benchmarking.
+Guidance for evaluating semantic model performance: memory analysis, query optimization, unused column detection, and benchmarking.
 
 ## Performance Analysis Tools
 

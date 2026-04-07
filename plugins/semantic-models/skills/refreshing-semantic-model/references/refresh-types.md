@@ -1,6 +1,6 @@
 # Refresh Types Reference
 
-Complete reference for all refresh types available in the Power BI Enhanced Refresh API and TMSL refresh command. These types apply to databases, tables, and partitions.
+Reference for all refresh types available in the Power BI Enhanced Refresh API and TMSL refresh command. These types apply to databases, tables, and partitions.
 
 ## Refresh Type Summary
 

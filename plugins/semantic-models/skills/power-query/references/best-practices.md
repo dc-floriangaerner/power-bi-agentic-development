@@ -184,7 +184,7 @@ in
 
 In Power Query Online or Desktop, right-click a step and check "View Native Query". If greyed out, the step doesn't fold.
 
-Programmatically: execute the expression via the `executeQuery` API. If a query on a large table completes well within the 90-second timeout, folding is likely working. If it times out or is slow, folding may be broken.
+Programmatically: execute the expression via the `executeQuery` API. If a query on a large table completes well within the timeout, folding is likely working. If it times out or is slow, folding may be broken.
 
 ## Column Pruning
 

@@ -1,6 +1,6 @@
 # Refresh Troubleshooting
 
-Common refresh failures, their causes, and resolutions. Use this reference when a refresh fails or behaves unexpectedly.
+Common refresh failures, their causes, and resolutions for diagnosing refresh issues.
 
 
 ## Credential and Authentication Errors

@@ -220,7 +220,6 @@ in
 
 - **`references/validation.md`** -- Detailed validation workflow with executeQuery API, step preview, error handling
 - **`references/best-practices.md`** -- Query folding guidance, fold-breaker list, anti-patterns, performance tips
-- **`references/pqtest.md`** -- PQTest local M execution (Windows only), folding validation, mashup engine internals
 - **`examples/execute_m.py`** -- Python script to execute M expressions via the Fabric API (CLI tool)
 - **`examples/preview_partition.py`** -- Python script to preview partition data at any step (uses `fab get` + `execute_m.py`)
 - [Power Query M Reference](https://learn.microsoft.com/en-us/powerquery-m/)

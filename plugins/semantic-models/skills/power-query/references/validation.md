@@ -1,6 +1,6 @@
 # Validating Power Query Expressions
 
-Two complementary approaches: execute against real data (catches everything) or save to the model (quick syntax check).
+Two complementary approaches: execute against real data (comprehensive validation) or save to the model (quick syntax check).
 
 ## Approach 1: Execute via Power Query API
 

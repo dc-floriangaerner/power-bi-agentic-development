@@ -266,6 +266,7 @@ pbir tree "path":
 
 pbir cat "path":
   use: inspect raw JSON for a page, visual, theme, or reportExtensions
+  note: does NOT support filters or bookmarks -- use `pbir filters list --json` or `pbir bookmarks json` instead
 
 pbir find "glob":
   use: locate visuals by name/pattern across reports
@@ -607,6 +608,8 @@ pbir pages active-page:
 
 ### Infrastructure and Fabric
 
+**Cross-workspace publishing:** Thin reports contain a `byConnection` string pointing to the source workspace's semantic model. Publishing to a different workspace works only if the target workspace can resolve that model (same capacity, shared model, or universal access). If the report shows "Unable to load report" after cross-workspace publish, rebind to a model in the target workspace with `pbir report rebind`.
+
 ```yaml
 pbir connect:
   use: set active report/workspace connection
@@ -615,8 +618,9 @@ pbir connect:
 pbir profile list/save/show/remove:
   use: manage saved connection profiles
 
-pbir publish:
-  use: deploy report to Fabric workspace
+pbir publish "Workspace.Workspace/Report.Report":
+  use: deploy report to Fabric workspace (positional: SOURCE DESTINATION, or just DESTINATION if source matches)
+  flags: -f (overwrite), -o (open in browser after publish)
 
 pbir download:
   use: download report from Fabric

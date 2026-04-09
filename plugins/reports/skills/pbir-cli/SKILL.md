@@ -7,6 +7,8 @@ description: Advanced Power BI report manipulation and execution using pbir CLI 
 
 Agent-first CLI for comprehensive Power BI report operations. All commands use `pbir`.
 
+**IMPORTANT: Always use `pbir` CLI commands to read and modify reports. Never edit report JSON files directly, and never load the `pbir-format` skill to make changes.** The CLI handles color serialization, field type detection, schema validation, and dirty tracking that raw JSON editing bypasses. Use `pbir-format` only as a read-only reference when debugging. If a feature is not exposed by a dedicated command, use `pbir set` with dot notation.
+
 ## Path Syntax
 
 Format: `ReportName.Report/PageName.Page/VisualName.Visual`
@@ -22,14 +24,14 @@ Format: `ReportName.Report/PageName.Page/VisualName.Visual`
 
 ## Related Skills
 
-- **`pbir-format`** -- load this skill to understand PBIR JSON file structure (visual.json, page.json, expressions, theme inheritance). Required before reading or debugging raw report files.
-- **`pbip-format`** -- load for PBIP project structure (definition.pbir, .platform, folder layout) and format conversion (PBIP/PBIX/PBIR).
-- **`create-pbi-report`** -- step-by-step guided workflow for creating reports from scratch.
-- **`pbi-report-design`** -- design best practices, layout guidelines, and visual hierarchy principles.
+- **`pbir-format`** -- read-only PBIR JSON reference. Load only for debugging, never for making changes.
+- **`pbip-format`** -- PBIP project structure and format conversion.
+- **`create-pbi-report`** -- step-by-step report creation workflow.
+- **`pbi-report-design`** -- design best practices and layout guidelines.
 
 ## Critical Rules
 
-1. **NEVER edit report JSON files directly.** Always use the CLI (`pbir visuals bind`, `pbir set`, etc.). The CLI handles field type resolution, schema validation, and structural integrity that raw JSON manipulation bypasses. If raw PBIR JSON must be read for debugging, load the **`pbir-format`** skill first to understand the structure. Editing JSON directly is the #1 source of broken reports.
+1. **NEVER edit report JSON files directly.** Always use `pbir` CLI commands or the Python object model. The CLI handles color serialization, field type detection, schema validation, and dirty tracking. Use `pbir cat` to inspect JSON; use `pbir set` for any property not covered by a dedicated command.
 
 2. **Column vs Measure matters.** Measures bound as Columns (or vice versa) produce "something is wrong with one or more fields" errors in Power BI Desktop that pass schema validation but fail at runtime. The CLI (`pbir visuals bind`) and object model (`visual.bind_field()`) auto-detect extension measures from `reportExtensions.json` and model measures from the semantic model. When auto-detection isn't possible (no model connection, no extension match), the default is Column. Override explicitly with `-t Measure` in the CLI or `field_type="Measure"` in `bind_field()`.
 
@@ -214,6 +216,7 @@ For gradient/rules/icons/data bars options, copy/remove/convert, and best practi
 ```bash
 pbir visuals action "Visual" --type PageNavigation --target "Details"  # Set action
 pbir add bookmark "Report.Report" "Q1 View"                           # Create bookmark
+pbir bookmarks page "Report.Report" "Q1 View" "Details"               # Set bookmark target page
 pbir pages drillthrough "Report/Details.Page" --table T --field F     # Add drillthrough
 pbir pages set-tooltip "Report/Tooltip.Page"                          # Configure tooltip
 ```
@@ -318,6 +321,10 @@ pbir cp "from" "to":
 
 pbir mv "from" "to":
   use: move or rename pages/visuals
+
+pbir visuals rename "path" "new-name":
+  use: rename a visual's folder (human-readable alias)
+  flags: --sanitize (auto-clean special chars), --force (glob patterns)
 
 pbir rm "path" -f:
   use: remove pages, visuals, filters, bookmarks, measures
@@ -550,9 +557,13 @@ pbir filters pane-hide/pane-collapse/pane-get/pane-set/pane-card:
   use: filter pane appearance
   flags: --width, --bg-color
 
-pbir bookmarks list/rename/data/display/visuals/json:
+pbir bookmarks list/rename/data/display/visuals/page/json:
   use: bookmark management
   flags: --off (disable capture)
+
+pbir bookmarks page "path" "bookmark" "page":
+  use: set which page a bookmark navigates to
+  args: report path, bookmark name, page name (omit page to show current)
 ```
 
 ### Page Operations
@@ -562,8 +573,9 @@ pbir add page "path":
   use: add a new page
   flags: -n "Name", --width/height, --from-template, --list-templates
 
-pbir pages rename:
-  use: rename a page
+pbir pages rename "path" "new name":
+  use: rename a page (updates display name and folder)
+  flags: --force (skip confirmation)
 
 pbir pages resize:
   use: change page dimensions
